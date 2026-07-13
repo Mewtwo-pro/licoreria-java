@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Login</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="top-bar">
+        <button class="btn-top">
+        </button>
+    </div>
+    <main class="login-container">
+        
+        <div class="brand">
+            <i class="fa-solid fa-bottle-droplet"></i>
+            <h1>LICORERÍA & TABERNA</h1>
+        </div>
+
+        <h2 class="login-title">ACCESO AL SISTEMA</h2>
+
+        <form action="/login" method="POST" class="login-form">
+            <div class="form-group">
+                <label>USUARIO (E-mail o ID)</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="username" name="username" autofocus>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>CONTRASEÑA</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="**********">
+                    <i class="fa-solid fa-eye toggle-password"></i>
+                </div>
+            </div>
+
+            <div class="extra-options">
+                <label class="remember-me">
+                    <input type="checkbox"> Recordar Sesión
+                </label>
+                <span class="forgot-password">¿Olvidaste tu contraseña?</span>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                INICIAR SESIÓN
+            </button>
+        </form>
+    </main>
+
+    <footer class="footer-status">
+        <div>Usuario: No autenticado</div>
+        <button class="btn-panel">Panel de Control</button>
+        <div>Fecha: 13 May 2026</div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Gestión de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/usuarios.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+    <main class="dashboard-grid">
+        
+        <section class="card panel-registro">
+            <h3>REGISTRO DE EMPLEADOS (NUEVO USUARIO)</h3>
+            
+            <form th:action="@{/usuarios/registrar}" method="POST" class="form-registro">
+                <div class="input-container">
+                    <label><i class="fa-solid fa-user-tie"></i> NOMBRE COMPLETO</label>
+                    <input type="text" name="nombre" placeholder="Ingresar nombre..." required>
+                </div>
+                <div class="input-container">
+                    <label><i class="fa-solid fa-lock"></i> NUEVA CONTRASEÑA</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="contraseña" placeholder="**********" required>
+                        <i class="fa-solid fa-eye toggle-password"></i>
+                    </div>
+                </div>
+                    
+                <div class="input-container">
+                    <label><i class="fa-solid fa-user-tie"></i> USERNAME</label>
+                    <input type="text" name="username" placeholder="Ingresar nombre usuario..." required>
+                </div>
+
+                <div class="input-container">
+                    <label><i class="fa-solid fa-list-check"></i> ASIGNACIÓN DE ROL</label>
+                    <select name="rol" required>
+                        <option value="" disabled selected>Seleccionar rol...</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Cajero</option>
+                        <option value="4">Repartidor</option>
+                        <option value="5">Almacenero</option>
+                    </select>
+                </div>
+
+                <div class="input-container">
+                    <label><i class="fa-solid fa-clock"></i> ASIGNAR TURNO (Opcional)</label>
+                    <select name="turno">
+                        <option value="Mañana">Turno Mañana</option>
+                        <option value="Tarde">Turno Tarde</option>
+                        <option value="Noche">Turno Noche</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-success btn-block">CREAR NUEVO USUARIO</button>
+            </form>
+        </section>
+
+        <section class="card panel-tabla">
+            <h3>TABLA DE EMPLEADOS REGISTRADOS</h3>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FOTO/ID</th>
+                            <th>NOMBRE COMPLETO</th>
+                            <th>ROL</th>
+                            <th>TURNO / HORARIO</th>
+                            <th>ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${usuarios}">
+                            <td th:text="'U000' + ${user.idUsuario}">U00123</td>
+                            <td th:text="${user.nombreCompleto}">Nombre Empleado</td>
+                            
+                            <td>
+                                <span th:if="${user.idRol == 1}">Admin</span>
+                                <span th:if="${user.idRol == 2}">Cajero</span>
+                                <span th:if="${user.idRol == 3}">Mesero</span>
+                                <span th:if="${user.idRol == 4}">Repartidor</span>
+                                <span th:if="${user.idRol == 5}">Almacenero</span>
+                                <span th:if="${user.idRol == 6}">Supervisor</span>
+                            </td>
+                            
+                            <td th:text="${user.turno}">Mañana</td>
+                            <td>
+                                <span th:class="${user.activo} ? 'status-active' : 'status-inactive'"
+                                      th:text="${user.activo} ? 'Activo' : 'Inactivo'">
+                                    Activo
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-actions">
+                <button class="btn-success">EXPORTAR INFORME</button>
+                <button class="btn-success">ACTUALIZAR SELECCIONADO</button>
+                <button class="btn-danger">ELIMINAR SELECCIONADO</button>
+            </div>
+            
+            <div class="go-puntoVenta">
+                <form th:action="@{/usuarios/accion}" method="POST">
+                    <button type="submit" name="accion" value="go-puntoVenta" class="btn-success">PUNTO DE VENTA</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="card panel-privilegios">
+            <h3>GESTIÓN DE PRIVILEGIOS POR ROL</h3>
+            <div class="privilegios-grid">
+                <div class="priv-col">
+                    <h4>CATEGORÍA: VENTAS (POS)</h4>
+                    <label class="checkbox-container"><input type="checkbox" checked disabled> Registrar Ventas</label>
+                    <label class="checkbox-container"><input type="checkbox" checked disabled> Ver Historial</label>
+                    <label class="checkbox-container"><input type="checkbox" checked disabled> Mesa Taberna</label>
+                </div>
+                <div class="priv-col">
+                    <h4>CATEGORÍA: INVENTARIO</h4>
+                    <label class="checkbox-container"><input type="checkbox" disabled> Ver Inventario</label>
+                    <label class="checkbox-container"><input type="checkbox" checked disabled> Editar Inventario</label>
+                    <label class="checkbox-container"><input type="checkbox" disabled> Gestionar Proveedores</label>
+                </div>
+                <div class="priv-col">
+                    <h4>CATEGORÍA: SISTEMA/ADMIN</h4>
+                    <label class="checkbox-container"><input type="checkbox" checked disabled> Acceso Gestión Usuarios</label>
+                    <label class="checkbox-container"><input type="checkbox" checked disabled> Configurar Privilegios</label>
+                    <label class="checkbox-container"><input type="checkbox" checked disabled> Cerrar Turno</label>
+                </div>
+            </div>
+            <button class="btn-success btn-block btn-outline">NUEVA ORDEN DE COMPRA</button>
+        </section>
+
+        <section class="card panel-resumen">
+            <h3>Resumen de Cobros y Efectivo en Mano</h3>
+            <div class="resumen-widgets">
+                <div class="widget total-ingresos">
+                    <span>Total Ingresos:</span>
+                    <h2>S/. 12,350.50 <i class="fa-solid fa-chart-line"></i></h2>
+                </div>
+                <div class="widget estado-caja">
+                    <span>ESTADO: PENDIENTE</span>
+                    <span class="badge-color">CÓDIGO COLOR</span>
+                </div>
+                <div class="widget filtro-activo">
+                    <span>Filtro Activo:</span>
+                    <h3>Julio 2026</h3>
+                </div>
+            </div>
+
+            <div class="resumen-footer-metrics">
+                <div class="metric">
+                    <p>EFECTIVO INICIAL CAJA</p>
+                    <strong>185</strong>
+                </div>
+                <div class="metric bg-green-dark">
+                    <p>Rotación de Mesas:</p>
+                    <strong>4.5 Veces</strong>
+                </div>
+                <div class="metric bg-green-dark">
+                    <p>Total Servicios Descorche:</p>
+                    <strong>S/. 8,900.00</strong>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div>Usuario: <strong th:text="${session.userRol}">Admin</strong></div>
+        <button class="btn-footer">Cerrar Gestión Usuarios</button>
+        <div>Fecha: <strong>12 Jul 2026</strong></div>
+    </footer>
+
+    <script th:src="script.js"></script>
+</body>
+</html>
