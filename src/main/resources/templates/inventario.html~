@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario (Almacén)</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/inventario.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </head>
+<body>
+
+    <div id="header-container"></div>
+    <main class="main-container">
+        
+        <section class="inventory-section">
+            <div class="search-bar-container">
+                <input type="text" class="search-input" placeholder="🔍 Buscar Producto (Ctrl+S)">
+            </div>
+
+            <div class="categories-container">
+                <span>Categoría:</span>
+                <button class="btn-category active">Whisky</button>
+                <button class="btn-category">Cerveza</button>
+                <button class="btn-category">Ron</button>
+                <button class="btn-category">Etcc.</button>
+                <button class="btn-category">Et...</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Código SKU ▲</th>
+                            <th>Nombre del Producto</th>
+                            <th>Categoría</th>
+                            <th>Stock Actual ▼</th>
+                            <th>Ubicación Almacén</th>
+                            <th>Stock Crítico ▼</th>
+                            <th>Último Precio de Compra</th>
+                            <th>Último Proveedor</th>
+                        </tr>
+                    </thead>
+                    <tbody th:each="prod : ${productos}">
+                        <tr>
+                            <td th:text="${prod.idProducto}">1</td>
+                            <td th:text="${prod.sku}">WBL001</td>
+                            <td th:text="${prod.nombreProducto}">Whisky Black Label</td>
+                            <td th:text="${prod.idCategoria}">Whisky</td>
+                            <td th:text="${prod.stockActual}">24 (Alerta)</td>
+                            <td th:text="${prod.ubicacionAlmacen}">Estante A3</td>
+                            <td th:text="${prod.stockCritico}">24 (Alerta)</td>
+                            <td th:>S/. 95.00</td>
+precioCompraProveedor
+                            <td>Distribuidora Licores S.A.</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>CCU004</td>
+                            <td>Cerveza Cusqueña</td>
+                            <td>Cerveza</td>
+                            <td>85</td>
+                            <td>Estante C1</td>
+                            <td>25</td>
+                            <td>S/. 6.00</td>
+                            <td>Cervecería Nacional</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>RCT012</td>
+                            <td>Ron Cartavio</td>
+                            <td>Ron</td>
+                            <td>18</td>
+                            <td>Estante B2</td>
+                            <td>10</td>
+                            <td>S/. 38.00</td>
+                            <td>Almacén Ronera</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>RCT014</td>
+                            <td>Ron Cartavio</td>
+                            <td>Cerveza</td>
+                            <td class="stock-alert">24 (Alerta)</td>
+                            <td>Estante A3</td>
+                            <td>10</td>
+                            <td>S/. 45.00</td>
+                            <td>Distribuidora Licores S.A.</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>RCT015</td>
+                            <td>Pisco Portón</td>
+                            <td>Pisco</td>
+                            <td class="stock-critical">18 (Alerta)</td>
+                            <td>Estante A3</td>
+                            <td>10</td>
+                            <td>S/. 45.00</td>
+                            <td>Almacén Ronera</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside class="sidebar-section">
+            <div class="panel shadow-box">
+                <h3>Panel de Acciones</h3>
+                <div class="actions-grid">
+                    <button class="btn-action">AÑADIR NUEVO PRODUCTO</button>
+                    <button class="btn-action">EDITAR SELECCIONADO</button>
+                    <button class="btn-action">ELIMINAR SELECCIONADO</button>
+                    <button class="btn-action">VER HISTORIAL DE MOVIMIENTOS</button>
+                    <button class="btn-action">GENERAR REPORTE BAJO STOCK</button>
+                </div>
+            </div>
+
+            <div class="panel shadow-box">
+                <h3>Detalle del Producto Seleccionado</h3>
+                <div class="product-detail-card">
+                    <div class="product-image-placeholder">
+                        <span>🍾</span> </div>
+                    <h4>Whisky Black Label</h4>
+                    <div class="detail-info">
+                        <p><strong>Categoría:</strong> Whisky Black Label</p>
+                        <p><strong>Stock Actual:</strong> 24</p>
+                        <p><strong>Último Precio:</strong> S/. 95.00</p>
+                        <p><strong>Último Proveedor:</strong> S/. 45.00</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <footer class="footer-status">
+        <div>Total Productos: <span class="green-text">185</span></div>
+        <div>Almacén Principal: <span class="green-text">95% Capacidad</span></div>
+        <div class="green-text">🔄 Sincronizado con Base de Datos</div>
+    </footer>
+
+    <script>
+        // 1. Pregunta al backend de Java qué header le corresponde a esta sesión
+        fetch('/api/current-header')
+            .then(response => response.text()) // Recibe "header-admin.html" o "header-user.html"
+            .then(headerArchivo => {
+                
+                // 2. Carga el archivo HTML correcto que nos dio Java
+                return fetch(headerArchivo);
+            })
+            .then(response => response.text())
+            .then(htmlContent => {
+                // 3. Inyecta el diseño final en la pantalla
+                document.getElementById('header-container').innerHTML = htmlContent;
+            })
+            .catch(err => System.out.error("Error cargando el header dinámico:", err));
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
