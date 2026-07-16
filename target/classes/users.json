@@ -1,0 +1,14 @@
+[
+  {
+    "nombre": "admin",
+    "contrasena": "123654",
+    "rol": "admin",
+    "turno": "Noche"
+  },
+  {
+    "nombre": "juan",
+    "contrasena": "juan123",
+    "rol": "empleado",
+    "turno": "Tarde"
+  }
+]

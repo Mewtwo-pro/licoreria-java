@@ -1,0 +1,123 @@
+..
+├── HELP.md
+├── infoProyect.md
+├── mvnw
+├── mvnw.cmd
+├── play.json
+├── pom.xml
+├── salida.txt
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── example
+│   │   │           └── demo
+│   │   │               ├── DemoApplication.java
+│   │   │               ├── HeaderController.java
+│   │   │               ├── PuntoVentaController.java
+│   │   │               ├── tree.txt
+│   │   │               ├── Usuario.java
+│   │   │               ├── UsuarioRepository.java
+│   │   │               └── UsuariosController.java
+│   │   └── resources
+│   │       ├── application.properties
+│   │       ├── consulta.sql
+│   │       ├── createDb.sql
+│   │       ├── static
+│   │       │   ├── css
+│   │       │   │   ├── estadoDelivery.css
+│   │       │   │   ├── header.css
+│   │       │   │   ├── historial.css
+│   │       │   │   ├── inventario.css
+│   │       │   │   ├── login.css
+│   │       │   │   ├── newdelivery.css
+│   │       │   │   ├── proveedores.css
+│   │       │   │   ├── puntoVenta.css
+│   │       │   │   └── usuarios.css
+│   │       │   ├── estadoDelivery.html
+│   │       │   ├── header-admin.html
+│   │       │   ├── header-user.html
+│   │       │   ├── historial.html
+│   │       │   ├── images
+│   │       │   │   └── puntoVenta
+│   │       │   │       └── whisky.png
+│   │       │   ├── index.html
+│   │       │   ├── inventario.html
+│   │       │   ├── newdelivery.html
+│   │       │   ├── proveedores.html
+│   │       │   ├── puntoVenta.html
+│   │       │   ├── script.js
+│   │       │   └── xusuarios.html
+│   │       ├── templates
+│   │       │   └── usuarios.html
+│   │       └── users.json
+│   └── test
+│       └── java
+│           └── com
+│               └── example
+│                   └── demo
+│                       └── DemoApplicationTests.java
+└── target
+    ├── classes
+    │   ├── application.properties
+    │   ├── com
+    │   │   └── example
+    │   │       └── demo
+    │   │           ├── DemoApplication.class
+    │   │           ├── HeaderController.class
+    │   │           ├── PuntoVentaController.class
+    │   │           ├── Usuario.class
+    │   │           ├── UsuarioRepository.class
+    │   │           └── UsuariosController.class
+    │   ├── consulta.sql
+    │   ├── createDb.sql
+    │   ├── static
+    │   │   ├── css
+    │   │   │   ├── estadoDelivery.css
+    │   │   │   ├── header.css
+    │   │   │   ├── historial.css
+    │   │   │   ├── inventario.css
+    │   │   │   ├── login.css
+    │   │   │   ├── newdelivery.css
+    │   │   │   ├── proveedores.css
+    │   │   │   ├── puntoVenta.css
+    │   │   │   └── usuarios.css
+    │   │   ├── estadoDelivery.html
+    │   │   ├── header-admin.html
+    │   │   ├── header-user.html
+    │   │   ├── historial.html
+    │   │   ├── images
+    │   │   │   └── puntoVenta
+    │   │   │       └── whisky.png
+    │   │   ├── index.html
+    │   │   ├── inventario.html
+    │   │   ├── newdelivery.html
+    │   │   ├── proveedores.html
+    │   │   ├── puntoVenta.html
+    │   │   ├── script.js
+    │   │   ├── usuarios.html
+    │   │   └── xusuarios.html
+    │   ├── templates
+    │   │   └── usuarios.html
+    │   └── users.json
+    ├── generated-sources
+    │   └── annotations
+    ├── generated-test-sources
+    │   └── test-annotations
+    ├── maven-status
+    │   └── maven-compiler-plugin
+    │       ├── compile
+    │       │   └── default-compile
+    │       │       ├── createdFiles.lst
+    │       │       └── inputFiles.lst
+    │       └── testCompile
+    │           └── default-testCompile
+    │               ├── createdFiles.lst
+    │               └── inputFiles.lst
+    └── test-classes
+        └── com
+            └── example
+                └── demo
+                    └── DemoApplicationTests.class
+
+42 directories, 79 files

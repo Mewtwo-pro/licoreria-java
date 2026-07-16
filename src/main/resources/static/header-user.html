@@ -1,0 +1,47 @@
+<header class="header header-user">
+    <div class="logo">
+        <a href="#">
+            <span class="material-symbols-outlined logo-icon">
+                <i class="fa-solid fa-bottle-droplet"></i>
+            </span>Licorería<span>Don Corleone</span>
+        </a>
+    </div>
+    
+    <div class="header-right">
+        
+        <div class="dropdown-container">
+            <button class="menu-trigger-btn user" id="managementBtn" onclick="toggleMenu('managementDropdown')">
+                <span class="material-symbols-outlined">menu</span> Gestión
+                <span class="material-symbols-outlined arrow-icon">keyboard_arrow_down</span>
+            </button>
+            
+            <form class="vertical-menu-dropdown" id="managementDropdown" action="header/accion" method="POST">
+                <button class="menu-item-btn" type="submit" name="accion" value="puntoventa"   ><span class="material-symbols-outlined">home</span> Ventas</button>
+                <button class="menu-item-btn" type="submit" name="accion" value="inventario" ><span class="material-symbols-outlined">liquor</span> Inventario</button>
+                <button class="menu-item-btn" type="submit" name="accion" value="proveedor" ><span class="material-symbols-outlined">sell</span> Proveedor</button>
+                <button class="menu-item-btn" type="submit" name="accion" value="historial" ><span class="material-symbols-outlined">mail</span> Historial</button>
+                <button class="menu-item-btn" type="submit" name="accion" value="delivery" ><span class="material-symbols-outlined">mail</span> Delivery</button>
+                <button class="menu-item-btn" type="submit" name="accion" value="estadodelivery" ><span class="material-symbols-outlined">mail</span> Info Delivery</button>
+            </form>
+        </div>
+
+        <div class="dropdown-container">
+            <button class="user-btn" id="userBtn" onclick="toggleMenu('userDropdown')">
+                <span class="material-symbols-outlined">account_circle</span>
+            </button>
+
+            <div class="user-dropdown" id="userDropdown">
+                <div class="dropdown-avatar"><span class="material-symbols-outlined large-icon">account_circle</span></div>
+                <h3 class="user-name">Carlos Mendoza</h3>
+                <p class="user-email">carlos.m@licoreria.com</p>
+                <span class="user-role">Administrador</span>
+                <hr class="divider">
+                <form th:action="@{/logout}" method="POST" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <span class="material-symbols-outlined">logout</span> Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div> </header>

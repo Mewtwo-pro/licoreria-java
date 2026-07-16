@@ -1,0 +1,323 @@
+
+2026-07-15T22:51:12.134-05:00 ERROR 20451 --- [demo] [nio-8080-exec-4] 
+org.thymeleaf.TemplateEngine             : [THYMELEAF][http-nio-8080-ex
+ec-4] Exception processing template "/inventario": Exception evaluating
+ SpringEL expression: "prod.ultimoPrecioCompra" (template: "/inventario
+" - line 55, col 29)
+
+org.thymeleaf.exceptions.TemplateProcessingException: Exception evaluat
+ing SpringEL expression: "prod.ultimoPrecioCompra" (template: "/inventa
+rio" - line 55, col 29)
+        at org.thymeleaf.spring6.expression.SPELVariableExpressionEvalu
+ator.evaluate(SPELVariableExpressionEvaluator.java:302) ~[thymeleaf-spr
+ing6-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.expression.VariableExpression.execute
+VariableExpression(VariableExpression.java:166) ~[thymeleaf-3.1.5.RELEA
+SE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.expression.SimpleExpression.executeSi
+mple(SimpleExpression.java:66) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELE
+ASE]
+        at org.thymeleaf.standard.expression.Expression.execute(Express
+ion.java:109) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.expression.Expression.execute(Express
+ion.java:138) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.processor.StandardDefaultAttributesTa
+gProcessor.processDefaultAttribute(StandardDefaultAttributesTagProcesso
+r.java:165) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.processor.StandardDefaultAttributesTa
+gProcessor.process(StandardDefaultAttributesTagProcessor.java:98) ~[thy
+meleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.util.ProcessorConfigurationUtils$ElementTagPro
+cessorWrapper.process(ProcessorConfigurationUtils.java:633) ~[thymeleaf
+-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElem
+ent(ProcessorTemplateHandler.java:1314) ~[thymeleaf-3.1.5.RELEASE.jar:3
+.1.5.RELEASE]
+        at org.thymeleaf.engine.OpenElementTag.beHandled(OpenElementTag
+.java:205) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.Model.process(Model.java:282) ~[thymele
+af-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.Model.process(Model.java:290) ~[thymele
+af-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.IteratedGatheringModelProcessable.proce
+ssIterationModel(IteratedGatheringModelProcessable.java:368) ~[thymelea
+f-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.IteratedGatheringModelProcessable.proce
+ss(IteratedGatheringModelProcessable.java:222) ~[thymeleaf-3.1.5.RELEAS
+E.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.ProcessorTemplateHandler.handleCloseEle
+ment(ProcessorTemplateHandler.java:1640) ~[thymeleaf-3.1.5.RELEASE.jar:
+3.1.5.RELEASE]
+        at org.thymeleaf.engine.CloseElementTag.beHandled(CloseElementT
+ag.java:139) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.TemplateModel.process(TemplateModel.jav
+a:136) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.TemplateManager.parseAndProcess(Templat
+eManager.java:661) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:110
+3) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:107
+7) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.spring6.view.ThymeleafView.renderFragment(Thym
+eleafView.java:374) ~[thymeleaf-spring6-3.1.5.RELEASE.jar:3.1.5.RELEASE
+]
+        at org.thymeleaf.spring6.view.ThymeleafView.render(ThymeleafVie
+w.java:193) ~[thymeleaf-spring6-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.springframework.web.servlet.DispatcherServlet.render(Dis
+patcherServlet.java:1305) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.processDis
+patchResult(DispatcherServlet.java:1042) ~[spring-webmvc-7.0.8.jar:7.0.
+8]
+        at org.springframework.web.servlet.DispatcherServlet.doDispatch
+(DispatcherServlet.java:980) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.doService(
+DispatcherServlet.java:866) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.FrameworkServlet.processRequ
+est(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.FrameworkServlet.doGet(Frame
+workServlet.java:892) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:62
+2) ~[tomcat-embed-core-11.0.22.jar:6.1]
+        at org.springframework.web.servlet.FrameworkServlet.service(Fra
+meworkServlet.java:874) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:71
+0) ~[tomcat-embed-core-11.0.22.jar:6.1]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:128) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilte
+r.java:53) ~[tomcat-embed-websocket-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.springframework.web.filter.RequestContextFilter.doFilter
+Internal(RequestContextFilter.java:100) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter
+(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.springframework.web.filter.FormContentFilter.doFilterInt
+ernal(FormContentFilter.java:93) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter
+(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.springframework.web.filter.CharacterEncodingFilter.doFil
+terInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.8.jar:7.
+0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter
+(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardWrapperValve.invoke(Standar
+dWrapperValve.java:165) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardContextValve.invoke(Standar
+dContextValve.java:77) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(A
+uthenticatorBase.java:492) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHo
+stValve.java:113) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorRepo
+rtValve.java:83) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardEngineValve.invoke(Standard
+EngineValve.java:72) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAd
+apter.java:341) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.http11.Http11Processor.service(Http11Proce
+ssor.java:397) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.AbstractProcessorLight.process(AbstractPro
+cessorLight.java:63) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.AbstractProtocol$ConnectionHandler.process
+(AbstractProtocol.java:1272) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun
+(NioEndpoint.java:1801) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketPro
+cessorBase.java:52) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(
+ThreadPoolExecutor.java:946) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run
+(ThreadPoolExecutor.java:480) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.r
+un(TaskThread.java:57) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.springframework.expression.spel.SpelEvaluationException:
+ EL1008E: Property or field 'ultimoPrecioCompra' cannot be found on obj
+ect of type 'com.example.demo.Producto' - maybe not public or not valid
+?
+        at org.springframework.expression.spel.ast.PropertyOrFieldRefer
+ence.readProperty(PropertyOrFieldReference.java:281) ~[spring-expressio
+n-7.0.8.jar:7.0.8]
+        at org.springframework.expression.spel.ast.PropertyOrFieldRefer
+ence.getValueInternal(PropertyOrFieldReference.java:123) ~[spring-expre
+ssion-7.0.8.jar:7.0.8]
+        at org.springframework.expression.spel.ast.PropertyOrFieldRefer
+ence$AccessorValueRef.getValue(PropertyOrFieldReference.java:432) ~[spr
+ing-expression-7.0.8.jar:7.0.8]
+        at org.springframework.expression.spel.ast.CompoundExpression.g
+etValueInternal(CompoundExpression.java:97) ~[spring-expression-7.0.8.j
+ar:7.0.8]
+        at org.springframework.expression.spel.ast.SpelNodeImpl.getValu
+e(SpelNodeImpl.java:114) ~[spring-expression-7.0.8.jar:7.0.8]
+        at org.springframework.expression.spel.standard.SpelExpression.
+getValue(SpelExpression.java:330) ~[spring-expression-7.0.8.jar:7.0.8]
+        at org.thymeleaf.spring6.expression.SPELVariableExpressionEvalu
+ator.evaluate(SPELVariableExpressionEvaluator.java:275) ~[thymeleaf-spr
+ing6-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        ... 58 common frames omitted
+
+2026-07-15T22:51:12.142-05:00 ERROR 20451 --- [demo] [nio-8080-exec-4] 
+o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servle
+t [dispatcherServlet] in context with path [] threw exception [Request 
+processing failed: org.thymeleaf.exceptions.TemplateProcessingException
+: Exception evaluating SpringEL expression: "prod.ultimoPrecioCompra" (
+template: "/inventario" - line 55, col 29)] with root cause
+
+org.springframework.expression.spel.SpelEvaluationException: EL1008E: P
+roperty or field 'ultimoPrecioCompra' cannot be found on object of type
+ 'com.example.demo.Producto' - maybe not public or not valid?
+        at org.springframework.expression.spel.ast.PropertyOrFieldRefer
+ence.readProperty(PropertyOrFieldReference.java:281) ~[spring-expressio
+n-7.0.8.jar:7.0.8]
+        at org.springframework.expression.spel.ast.PropertyOrFieldRefer
+ence.getValueInternal(PropertyOrFieldReference.java:123) ~[spring-expre
+ssion-7.0.8.jar:7.0.8]
+        at org.springframework.expression.spel.ast.PropertyOrFieldRefer
+ence$AccessorValueRef.getValue(PropertyOrFieldReference.java:432) ~[spr
+ing-expression-7.0.8.jar:7.0.8]
+        at org.springframework.expression.spel.ast.CompoundExpression.g
+etValueInternal(CompoundExpression.java:97) ~[spring-expression-7.0.8.j
+ar:7.0.8]
+        at org.springframework.expression.spel.ast.SpelNodeImpl.getValu
+e(SpelNodeImpl.java:114) ~[spring-expression-7.0.8.jar:7.0.8]
+        at org.springframework.expression.spel.standard.SpelExpression.
+getValue(SpelExpression.java:330) ~[spring-expression-7.0.8.jar:7.0.8]
+        at org.thymeleaf.spring6.expression.SPELVariableExpressionEvalu
+ator.evaluate(SPELVariableExpressionEvaluator.java:275) ~[thymeleaf-spr
+ing6-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.expression.VariableExpression.execute
+VariableExpression(VariableExpression.java:166) ~[thymeleaf-3.1.5.RELEA
+SE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.expression.SimpleExpression.executeSi
+mple(SimpleExpression.java:66) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELE
+ASE]
+        at org.thymeleaf.standard.expression.Expression.execute(Express
+ion.java:109) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.expression.Expression.execute(Express
+ion.java:138) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.processor.StandardDefaultAttributesTa
+gProcessor.processDefaultAttribute(StandardDefaultAttributesTagProcesso
+r.java:165) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.standard.processor.StandardDefaultAttributesTa
+gProcessor.process(StandardDefaultAttributesTagProcessor.java:98) ~[thy
+meleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.util.ProcessorConfigurationUtils$ElementTagPro
+cessorWrapper.process(ProcessorConfigurationUtils.java:633) ~[thymeleaf
+-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.ProcessorTemplateHandler.handleOpenElem
+ent(ProcessorTemplateHandler.java:1314) ~[thymeleaf-3.1.5.RELEASE.jar:3
+.1.5.RELEASE]
+        at org.thymeleaf.engine.OpenElementTag.beHandled(OpenElementTag
+.java:205) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.Model.process(Model.java:282) ~[thymele
+af-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.Model.process(Model.java:290) ~[thymele
+af-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.IteratedGatheringModelProcessable.proce
+ssIterationModel(IteratedGatheringModelProcessable.java:368) ~[thymelea
+f-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.IteratedGatheringModelProcessable.proce
+ss(IteratedGatheringModelProcessable.java:222) ~[thymeleaf-3.1.5.RELEAS
+E.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.ProcessorTemplateHandler.handleCloseEle
+ment(ProcessorTemplateHandler.java:1640) ~[thymeleaf-3.1.5.RELEASE.jar:
+3.1.5.RELEASE]
+        at org.thymeleaf.engine.CloseElementTag.beHandled(CloseElementT
+ag.java:139) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.TemplateModel.process(TemplateModel.jav
+a:136) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.engine.TemplateManager.parseAndProcess(Templat
+eManager.java:661) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:110
+3) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.TemplateEngine.process(TemplateEngine.java:107
+7) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.spring6.view.ThymeleafView.renderFragment(Thym
+eleafView.java:374) ~[thymeleaf-spring6-3.1.5.RELEASE.jar:3.1.5.RELEASE
+]
+        at org.thymeleaf.spring6.view.ThymeleafView.render(ThymeleafVie
+w.java:193) ~[thymeleaf-spring6-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.springframework.web.servlet.DispatcherServlet.render(Dis
+patcherServlet.java:1305) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.processDis
+patchResult(DispatcherServlet.java:1042) ~[spring-webmvc-7.0.8.jar:7.0.
+8]
+        at org.springframework.web.servlet.DispatcherServlet.doDispatch
+(DispatcherServlet.java:980) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.doService(
+DispatcherServlet.java:866) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.FrameworkServlet.processRequ
+est(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.FrameworkServlet.doGet(Frame
+workServlet.java:892) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:62
+2) ~[tomcat-embed-core-11.0.22.jar:6.1]
+        at org.springframework.web.servlet.FrameworkServlet.service(Fra
+meworkServlet.java:874) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:71
+0) ~[tomcat-embed-core-11.0.22.jar:6.1]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:128) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilte
+r.java:53) ~[tomcat-embed-websocket-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.springframework.web.filter.RequestContextFilter.doFilter
+Internal(RequestContextFilter.java:100) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter
+(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.springframework.web.filter.FormContentFilter.doFilterInt
+ernal(FormContentFilter.java:93) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter
+(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.springframework.web.filter.CharacterEncodingFilter.doFil
+terInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.8.jar:7.
+0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doFilter
+(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilter(App
+licationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardWrapperValve.invoke(Standar
+dWrapperValve.java:165) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardContextValve.invoke(Standar
+dContextValve.java:77) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.authenticator.AuthenticatorBase.invoke(A
+uthenticatorBase.java:492) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardHostValve.invoke(StandardHo
+stValve.java:113) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorRepo
+rtValve.java:83) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardEngineValve.invoke(Standard
+EngineValve.java:72) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAd
+apter.java:341) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.http11.Http11Processor.service(Http11Proce
+ssor.java:397) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.AbstractProcessorLight.process(AbstractPro
+cessorLight.java:63) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.AbstractProtocol$ConnectionHandler.process
+(AbstractProtocol.java:1272) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun
+(NioEndpoint.java:1801) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketPro
+cessorBase.java:52) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(
+ThreadPoolExecutor.java:946) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run
+(ThreadPoolExecutor.java:480) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.r
+un(TaskThread.java:57) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+

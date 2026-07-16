@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div class="mi proveedor" th:each="prove : ${proveedores}">
+        <p class="proveedor-name" th:text="${prove.nombreProveedor}"></p>
+        <h3>emails </h3>
+        <p class="proveedor-name" th:text="${prove.emailProveedor}"></p>
+    </div>
+</body>
+</html>
