@@ -21,7 +21,6 @@
 body {
     background-color: var(--bg-main);
     color: var(--text-main);
-    padding: 15px;
     font-size: 13px;
 }
 
@@ -309,4 +308,10 @@ th i {
     .filters-grid, .bottom-grid, .detail-content {
         grid-template-columns: 1fr;
     }
+}
+
+/* Resalta la fila seleccionada en la tabla */
+.table-active-row {
+    background-color: #e2e8f0 !important; /* Un gris suave o el color principal de tu tema */
+    font-weight: 500;
 }

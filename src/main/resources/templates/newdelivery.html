@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Operaciones de Delivery</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/newdelivery.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+        
+    <div class="container-grid">
+        
+        <section class="panel">
+            <h2><i class="fa-solid fa-file-invoice-dollar" style="margin-right: 5px;"></i> 1. Registrar Nuevo Pedido de Delivery</h2>
+            <form onsubmit="event.preventDefault();">
+                
+                <div class="form-section">
+                    <h3>Datos del Cliente</h3>
+                    <div class="form-group-row">
+                        <input type="text" placeholder="Teléfono / Celular (Ej: 987654321)">
+                        <input type="text" placeholder="Nombre Completo del Cliente">
+                    </div>
+                    <div class="form-group-row">
+                        <input type="text" placeholder="Dirección de Entrega (Calle, Av, Número)">
+                        <select>
+                            <option value="">Seleccionar Distrito / Zona</option>
+                            <option value="1">Miraflores (S/. 15.00)</option>
+                            <option value="2">Surco (S/. 12.00)</option>
+                            <option value="3">San Isidro (S/. 15.00)</option>
+                        </select>
+                    </div>
+                    <input type="text" placeholder="Referencia de la vivienda (Color de fachada, frente a...)">
+                </div>
+
+                <div class="form-section">
+                    <h3>Añadir Productos al Carrito</h3>
+                    <div class="product-selector-grid">
+                        <select>
+                            <option value="">Seleccionar Producto Disponible</option>
+                            <option value="1">Whisky Johnnie Walker Black Label - S/. 115.00</option>
+                            <option value="2">Cerveza Corona Pack x6 - S/. 35.00</option>
+                            <option value="3">Bolsa de Hielo Gourmet - S/. 8.00</option>
+                        </select>
+                        <input type="number" value="1" min="1" style="text-align: center;">
+                        <button type="button" class="btn-primary"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+
+                    <div class="mini-cart">
+                        <div class="cart-item">
+                            <span>2x Whisky Johnnie Walker Black Label</span>
+                            <strong>S/. 230.00 <i class="fa-solid fa-trash remove-icon"></i></strong>
+                        </div>
+                        <div class="cart-item">
+                            <span>1x Bolsa de Hielo Gourmet</span>
+                            <strong>S/. 8.00 <i class="fa-solid fa-trash remove-icon"></i></strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="payment-totals-grid">
+                        <div>
+                            <h3>Forma de Pago</h3>
+                            <select style="margin-bottom: 10px;">
+                                <option value="efectivo">Efectivo (Requiere Vuelto)</option>
+                                <option value="tarjeta">Tarjeta (POS Delivery)</option>
+                                <option value="yape">Yape / Plin</option>
+                            </select>
+                            <input type="text" placeholder="¿Con cuánto va a pagar?">
+                        </div>
+                        <div class="totals-display">
+                            <div class="t-row"><span>Subtotal:</span> <span>S/. 238.00</span></div>
+                            <div class="t-row"><span>Envío:</span> <span>S/. 15.00</span></div>
+                            <hr class="dashed-hr">
+                            <div class="t-row total"><span>Total:</span> <span>S/. 253.00</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary btn-block btn-large">
+                    GUARDAR Y MANDAR A COCINA/ALMACÉN
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2><i class="fa-solid fa-motorcycle" style="margin-right: 5px;"></i> 2. Despacho y Repartidores</h2>
+            
+            <div class="dispatch-section">
+                <h3>Pedidos Pendientes de Salida</h3>
+                <div class="pending-card">
+                    <div class="card-header">
+                        <span class="order-id">Pedido #D0843</span>
+                        <span class="badge">Listo para Salir</span>
+                    </div>
+                    <p style="color: #ccc;"><strong>Cliente:</strong> Elena Pezet | <strong>Zona:</strong> San Isidro</p>
+                    <p class="card-items">1x Cerveza Corona Pack x6, 1x Ron Cartavio</p>
+                    
+                    <div class="assign-action">
+                        <select>
+                            <option value="">-- Seleccionar Repartidor --</option>
+                            <option value="1">Jorge Rivas (Moto 1 - Libre)</option>
+                            <option value="2">Carlos Flores (Moto 3 - Libre)</option>
+                        </select>
+                        <button class="btn-primary">ASIGNAR</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="panel-divider">
+
+            <div class="dispatch-section">
+                <h3>Estado de la Flota</h3>
+                <ul class="rider-list">
+                    <li class="rider-item">
+                        <div class="rider-info">
+                            <span class="dot-status status-free"></span>
+                            <span>Jorge Rivas (Moto 1)</span>
+                        </div>
+                        <span class="text-free">LIBRE</span>
+                    </li>
+                    <li class="rider-item">
+                        <div class="rider-info">
+                            <span class="dot-status status-busy"></span>
+                            <span>Luis Torres (Moto 2)</span>
+                        </div>
+                        <span class="text-busy">EN RUTA</span>
+                    </li>
+                    <li class="rider-item">
+                        <div class="rider-info">
+                            <span class="dot-status status-free"></span>
+                            <span>Carlos Flores (Moto 3)</span>
+                        </div>
+                        <span class="text-free">LIBRE</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script th:src="script.js"></script>
+</body>
+</html>

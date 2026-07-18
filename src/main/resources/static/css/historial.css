@@ -20,7 +20,6 @@
 body {
     background-color: var(--bg-main);
     color: var(--text-color);
-    padding: 15px;
     font-size: 14px;
 }
 

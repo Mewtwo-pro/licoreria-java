@@ -24,11 +24,11 @@ public class HeaderController {
         }else if ("inventario".equals(accion)){
             return "redirect:/inventario";
         }else if ("proveedor".equals(accion)){
-            return "redirect:/proveedores.html";
+            return "redirect:/proveedor";
         }else if ("historial".equals(accion)){
-            return "redirect:/historial.html";
+            return "redirect:/historial";
         }else if ("delivery".equals(accion)){
-            return "redirect:/newdelivery.html";
+            return "redirect:/newdelivery";
         }else if ("estadodelivery".equals(accion)){
             return "redirect:/estadoDelivery.html";
         }
