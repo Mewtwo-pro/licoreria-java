@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario (Almacén)</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/inventario.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </head>
+<body>
+
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+    <main class="main-container">
+        
+        <section class="inventory-section">
+            <div class="search-bar-container">
+                <input type="text" class="search-input" placeholder="🔍 Buscar Producto (Ctrl+S)">
+            </div>
+
+            <div class="categories-container">
+                <span>Categoría:</span>
+                <div th:each="cat : ${categorias}" style="display: inline-block;">
+                    <button th:text="${cat.nombreCategoria}" class="btn-category">
+                        Nombre Categoría
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Código SKU ▲</th>
+                            <th>Nombre del Producto</th>
+                            <th>Categoría</th>
+                            <th>Stock Actual ▼</th>
+                            <th>Ubicación Almacén</th>
+                            <th>Stock Crítico ▼</th>
+                            <th>Último Precio de Compra</th>
+                            <th>Último Proveedor</th>
+                        </tr>
+                    </thead>
+                        
+                    <tbody id="inventory-tbody">
+                        <tr th:each="prod : ${productos}" 
+                            th:data-id="${prod.idProducto}"
+                            th:data-sku="${prod.sku}"
+                            th:data-nombre="${prod.nombreProducto}"
+                            th:data-categoria="${prod.categoriaProducto != null ? prod.categoriaProducto.nombreCategoria : 'Sin Categoría'}"
+                            th:data-stock="${prod.stockActual}"
+                            th:data-precio-venta="${prod.precioVenta}"
+                            th:data-precio-compra="${prod.precioCompraProveedor}"
+                            th:data-proveedor="${prod.proveedorPrincipal != null ? prod.proveedorPrincipal.nombreProveedor : 'Sin Proveedor'}"
+                            th:data-imagen="${prod.imagenUrl}"
+                            class="product-row">
+
+                            <td th:text="${prod.idProducto}">1</td>
+                            <td th:text="${prod.sku}">WBL001</td>
+                            <td th:text="${prod.nombreProducto}">Whisky Black Label</td>
+                            <td th:text="${prod.categoriaProducto != null ? prod.categoriaProducto.nombreCategoria : '0'}">
+                                1
+                            </td>
+                            <td th:text="${prod.stockActual}">24 (Alerta)</td>
+                            <td th:text="${prod.ubicacionAlmacen}">Estante A3</td>
+                            <td th:text="${prod.stockCritico}">24 (Alerta)</td>
+                            <td th:text="${'S/. ' + prod.precioCompraProveedor}">S/. 95.00</td>
+                            <td th:text="${prod.proveedorPrincipal != null ? prod.proveedorPrincipal.nombreProveedor : 'Sin Proveeder'}">
+                                Distribuidora Licores S.A.</td>
+                        </tr> 
+                   </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside class="sidebar-section">
+            <div class="panel shadow-box">
+                <h3>Panel de Acciones</h3>
+                <div class="actions-grid">
+                    <button class="btn-action">AÑADIR NUEVO PRODUCTO</button>
+                    <button class="btn-action">EDITAR SELECCIONADO</button>
+                    <button class="btn-action">ELIMINAR SELECCIONADO</button>
+                    <button class="btn-action">VER HISTORIAL DE MOVIMIENTOS</button>
+                    <button class="btn-action">GENERAR REPORTE BAJO STOCK</button>
+                </div>
+            </div>
+
+            <div class="panel shadow-box">
+                <h3>Detalle del Producto Seleccionado</h3>
+                <div class="product-detail-card">
+                    <div class="product-image-placeholder">
+                        <img id="detail-img" src="/images/puntoVenta/whisky.png" alt="Imagen del producto" style="max-width: 80px; max-height: 80px; object-fit: contain; display: none;">
+                        <span id="detail-emoji">🍾</span> 
+                    </div>
+                    <h4 id="detail-nombre">Selecciona un producto</h4>
+                    <div class="detail-info">
+                        <p><strong>SKU:</strong> <span id="detail-sku">-</span></p>
+                        <p><strong>Categoría:</strong> <span id="detail-categoria">-</span></p>
+                        <p><strong>Stock Actual:</strong> <span id="detail-stock">-</span></p>
+                        <p><strong>Precio Venta:</strong> <span id="detail-precio-venta">-</span></p>
+                        <p><strong>Último Precio Compra:</strong> <span id="detail-precio-compra">-</span></p>
+                        <p><strong>Último Proveedor:</strong> <span id="detail-proveedor">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <footer class="footer-status">
+        <div>Total Productos: <span class="green-text">185</span></div>
+        <div>Almacén Principal: <span class="green-text">95% Capacidad</span></div>
+        <div class="green-text">🔄 Sincronizado con Base de Datos</div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.querySelector(".search-input");
+        const categoryButtons = document.querySelectorAll(".btn-category");
+        const tableRows = document.querySelectorAll("#inventory-tbody tr");
+
+        let activeCategory = null; // Guarda el nombre de la categoría seleccionada actualmente
+
+        // --- FUNCIÓN DE FILTRADO PRINCIPAL ---
+        function filterTable() {
+            const searchText = searchInput.value.toLowerCase().trim();
+
+            tableRows.forEach(row => {
+                // Obtenemos el texto de las celdas clave
+                const nameText = row.cells[2].textContent.toLowerCase(); // Nombre de Producto
+                const skuText = row.cells[1].textContent.toLowerCase();   // SKU
+                const categoryText = row.cells[3].textContent.trim();     // Categoría (Celda 4)
+
+                // Comprobamos si coincide con la categoría seleccionada
+                const matchesCategory = !activeCategory || categoryText === activeCategory;
+
+                // Comprobamos si coincide con el texto buscado (en nombre o SKU)
+                const matchesSearch = nameText.includes(searchText) || skuText.includes(searchText);
+
+                // Si cumple ambas condiciones, se muestra; si no, se oculta
+                if (matchesCategory && matchesSearch) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        // --- EVENTO DE BUSCADOR (Escribir en tiempo real) ---
+        searchInput.addEventListener("input", filterTable);
+
+        // --- EVENTO DE BOTONES DE CATEGORÍA ---
+        categoryButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const clickedCategory = button.textContent.trim();
+
+                if (activeCategory === clickedCategory) {
+                    // Si ya estaba activa la misma categoría, la quitamos (reseteamos)
+                    activeCategory = null;
+                    button.classList.remove("active"); // Clase CSS por si quieres darle un estilo visual activo
+                } else {
+                    // Si es una nueva categoría, quitamos el estado activo a los demás botones y se lo damos a este
+                    categoryButtons.forEach(btn => btn.classList.remove("active"));
+                    activeCategory = clickedCategory;
+                    button.classList.add("active");
+                }
+
+                // Ejecutamos el filtro general
+                filterTable();
+            });
+        });
+
+// --- SELECCIÓN Y DETALLE DEL PRODUCTO EN EL PANEL LATERAL ---
+const productRows = document.querySelectorAll(".product-row");
+
+// Elementos del panel de detalle
+const detailImg = document.getElementById("detail-img");
+const detailEmoji = document.getElementById("detail-emoji");
+const detailNombre = document.getElementById("detail-nombre");
+const detailSku = document.getElementById("detail-sku");
+const detailCategoria = document.getElementById("detail-categoria");
+const detailStock = document.getElementById("detail-stock");
+const detailPrecioVenta = document.getElementById("detail-precio-venta");
+const detailPrecioCompra = document.getElementById("detail-precio-compra");
+const detailProveedor = document.getElementById("detail-proveedor");
+
+productRows.forEach(row => {
+    row.addEventListener("click", () => {
+        // 1. Quitamos la clase 'selected-row' de cualquier otra fila antes de marcar esta
+        productRows.forEach(r => r.classList.remove("selected-row"));
+        row.classList.add("selected-row");
+
+        // 2. Extraemos los datos del producto guardados en los atributos data-*
+        const id = row.getAttribute("data-id");
+        const sku = row.getAttribute("data-sku");
+        const nombre = row.getAttribute("data-nombre");
+        const categoria = row.getAttribute("data-categoria");
+        const stock = row.getAttribute("data-stock");
+        const precioVenta = parseFloat(row.getAttribute("data-precio-venta")).toFixed(2);
+        const precioCompra = row.getAttribute("data-precio-compra") ? parseFloat(row.getAttribute("data-precio-compra")).toFixed(2) : '0.00';
+        const proveedor = row.getAttribute("data-proveedor");
+        const imagenUrl = row.getAttribute("data-imagen");
+
+        // 3. Inyectamos los datos en el panel de detalle lateral
+        detailNombre.textContent = nombre;
+        detailSku.textContent = sku;
+        detailCategoria.textContent = categoria;
+        detailStock.textContent = stock;
+        detailPrecioVenta.textContent = `S/. ${precioVenta}`;
+        detailPrecioCompra.textContent = `S/. ${precioCompra}`;
+        detailProveedor.textContent = proveedor;
+
+        // 4. Manejamos la visualización de la imagen
+        if (imagenUrl && imagenUrl.trim() !== "" && imagenUrl !== "null") {
+            detailImg.src = imagenUrl;
+            detailImg.style.display = "block";
+            detailEmoji.style.display = "none";
+        } else {
+            detailImg.style.display = "none";
+            detailEmoji.style.display = "block";
+        }
+    });
+});
+
+        // --- ATAJO DE TECLADO (Ctrl + S para enfocar el input de búsqueda) ---
+        document.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault(); // Evita que el navegador intente "guardar página"
+                searchInput.focus();
+            }
+        });
+    });
+    </script>
+
+    <script th:src="script.js"></script>
+</body>
+</html>
