@@ -1,0 +1,240 @@
+
+2026-07-18T11:08:31.135-05:00 ERROR 8258 --- [demo] [nio-8080-exec
+-3] org.thymeleaf.TemplateEngine             : [THYMELEAF][http-ni
+o-8080-exec-3] Exception processing template "usuarios": Error res
+olving template [usuarios], template might not exist or might not 
+be accessible by any of the configured Template Resolvers
+
+org.thymeleaf.exceptions.TemplateInputException: Error resolving t
+emplate [usuarios], template might not exist or might not be acces
+sible by any of the configured Template Resolvers
+        at org.thymeleaf.engine.TemplateManager.resolveTemplate(Te
+mplateManager.java:869) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEAS
+E]
+        at org.thymeleaf.engine.TemplateManager.parseAndProcess(Te
+mplateManager.java:607) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEAS
+E]
+        at org.thymeleaf.TemplateEngine.process(TemplateEngine.jav
+a:1103) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.TemplateEngine.process(TemplateEngine.jav
+a:1077) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.spring6.view.ThymeleafView.renderFragment
+(ThymeleafView.java:374) ~[thymeleaf-spring6-3.1.5.RELEASE.jar:3.1
+.5.RELEASE]
+        at org.thymeleaf.spring6.view.ThymeleafView.render(Thymele
+afView.java:193) ~[thymeleaf-spring6-3.1.5.RELEASE.jar:3.1.5.RELEA
+SE]
+        at org.springframework.web.servlet.DispatcherServlet.rende
+r(DispatcherServlet.java:1305) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.proce
+ssDispatchResult(DispatcherServlet.java:1042) ~[spring-webmvc-7.0.
+8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.doDis
+patch(DispatcherServlet.java:980) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.doSer
+vice(DispatcherServlet.java:866) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.FrameworkServlet.proces
+sRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.8.jar:7.0
+.8]
+        at org.springframework.web.servlet.FrameworkServlet.doGet(
+FrameworkServlet.java:892) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.ja
+va:622) ~[tomcat-embed-core-11.0.22.jar:6.1]
+        at org.springframework.web.servlet.FrameworkServlet.servic
+e(FrameworkServlet.java:874) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.ja
+va:710) ~[tomcat-embed-core-11.0.22.jar:6.1]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:128) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.apache.tomcat.websocket.server.WsFilter.doFilter(Ws
+Filter.java:53) ~[tomcat-embed-websocket-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.springframework.web.filter.RequestContextFilter.doF
+ilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.8.ja
+r:7.0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doF
+ilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.springframework.web.filter.FormContentFilter.doFilt
+erInternal(FormContentFilter.java:93) ~[spring-web-7.0.8.jar:7.0.8
+]
+        at org.springframework.web.filter.OncePerRequestFilter.doF
+ilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.springframework.web.filter.CharacterEncodingFilter.
+doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.
+0.8.jar:7.0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doF
+ilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.apache.catalina.core.StandardWrapperValve.invoke(St
+andardWrapperValve.java:165) ~[tomcat-embed-core-11.0.22.jar:11.0.
+22]
+        at org.apache.catalina.core.StandardContextValve.invoke(St
+andardContextValve.java:77) ~[tomcat-embed-core-11.0.22.jar:11.0.2
+2]
+        at org.apache.catalina.authenticator.AuthenticatorBase.inv
+oke(AuthenticatorBase.java:492) ~[tomcat-embed-core-11.0.22.jar:11
+.0.22]
+        at org.apache.catalina.core.StandardHostValve.invoke(Stand
+ardHostValve.java:113) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.valves.ErrorReportValve.invoke(Erro
+rReportValve.java:83) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardEngineValve.invoke(Sta
+ndardEngineValve.java:72) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.connector.CoyoteAdapter.service(Coy
+oteAdapter.java:341) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.http11.Http11Processor.service(Http11
+Processor.java:397) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.AbstractProcessorLight.process(Abstra
+ctProcessorLight.java:63) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.AbstractProtocol$ConnectionHandler.pr
+ocess(AbstractProtocol.java:1272) ~[tomcat-embed-core-11.0.22.jar:
+11.0.22]
+        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.
+doRun(NioEndpoint.java:1801) ~[tomcat-embed-core-11.0.22.jar:11.0.
+22]
+        at org.apache.tomcat.util.net.SocketProcessorBase.run(Sock
+etProcessorBase.java:52) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWo
+rker(ThreadPoolExecutor.java:946) ~[tomcat-embed-core-11.0.22.jar:
+11.0.22]
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worke
+r.run(ThreadPoolExecutor.java:480) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.apache.tomcat.util.threads.TaskThread$WrappingRunna
+ble.run(TaskThread.java:57) ~[tomcat-embed-core-11.0.22.jar:11.0.2
+2]
+        at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:n
+a]
+
+2026-07-18T11:08:31.139-05:00 ERROR 8258 --- [demo] [nio-8080-exec
+-3] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() f
+or servlet [dispatcherServlet] in context with path [] threw excep
+tion [Request processing failed: org.thymeleaf.exceptions.Template
+InputException: Error resolving template [usuarios], template migh
+t not exist or might not be accessible by any of the configured Te
+mplate Resolvers] with root cause
+
+org.thymeleaf.exceptions.TemplateInputException: Error resolving t
+emplate [usuarios], template might not exist or might not be acces
+sible by any of the configured Template Resolvers
+        at org.thymeleaf.engine.TemplateManager.resolveTemplate(Te
+mplateManager.java:869) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEAS
+E]
+        at org.thymeleaf.engine.TemplateManager.parseAndProcess(Te
+mplateManager.java:607) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEAS
+E]
+        at org.thymeleaf.TemplateEngine.process(TemplateEngine.jav
+a:1103) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.TemplateEngine.process(TemplateEngine.jav
+a:1077) ~[thymeleaf-3.1.5.RELEASE.jar:3.1.5.RELEASE]
+        at org.thymeleaf.spring6.view.ThymeleafView.renderFragment
+(ThymeleafView.java:374) ~[thymeleaf-spring6-3.1.5.RELEASE.jar:3.1
+.5.RELEASE]
+        at org.thymeleaf.spring6.view.ThymeleafView.render(Thymele
+afView.java:193) ~[thymeleaf-spring6-3.1.5.RELEASE.jar:3.1.5.RELEA
+SE]
+        at org.springframework.web.servlet.DispatcherServlet.rende
+r(DispatcherServlet.java:1305) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.proce
+ssDispatchResult(DispatcherServlet.java:1042) ~[spring-webmvc-7.0.
+8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.doDis
+patch(DispatcherServlet.java:980) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.DispatcherServlet.doSer
+vice(DispatcherServlet.java:866) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at org.springframework.web.servlet.FrameworkServlet.proces
+sRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.8.jar:7.0
+.8]
+        at org.springframework.web.servlet.FrameworkServlet.doGet(
+FrameworkServlet.java:892) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.ja
+va:622) ~[tomcat-embed-core-11.0.22.jar:6.1]
+        at org.springframework.web.servlet.FrameworkServlet.servic
+e(FrameworkServlet.java:874) ~[spring-webmvc-7.0.8.jar:7.0.8]
+        at jakarta.servlet.http.HttpServlet.service(HttpServlet.ja
+va:710) ~[tomcat-embed-core-11.0.22.jar:6.1]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:128) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.apache.tomcat.websocket.server.WsFilter.doFilter(Ws
+Filter.java:53) ~[tomcat-embed-websocket-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.springframework.web.filter.RequestContextFilter.doF
+ilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.8.ja
+r:7.0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doF
+ilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.springframework.web.filter.FormContentFilter.doFilt
+erInternal(FormContentFilter.java:93) ~[spring-web-7.0.8.jar:7.0.8
+]
+        at org.springframework.web.filter.OncePerRequestFilter.doF
+ilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.springframework.web.filter.CharacterEncodingFilter.
+doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.
+0.8.jar:7.0.8]
+        at org.springframework.web.filter.OncePerRequestFilter.doF
+ilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.8.jar:7.0.8]
+        at org.apache.catalina.core.ApplicationFilterChain.doFilte
+r(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.apache.catalina.core.StandardWrapperValve.invoke(St
+andardWrapperValve.java:165) ~[tomcat-embed-core-11.0.22.jar:11.0.
+22]
+        at org.apache.catalina.core.StandardContextValve.invoke(St
+andardContextValve.java:77) ~[tomcat-embed-core-11.0.22.jar:11.0.2
+2]
+        at org.apache.catalina.authenticator.AuthenticatorBase.inv
+oke(AuthenticatorBase.java:492) ~[tomcat-embed-core-11.0.22.jar:11
+.0.22]
+        at org.apache.catalina.core.StandardHostValve.invoke(Stand
+ardHostValve.java:113) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.valves.ErrorReportValve.invoke(Erro
+rReportValve.java:83) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.core.StandardEngineValve.invoke(Sta
+ndardEngineValve.java:72) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.catalina.connector.CoyoteAdapter.service(Coy
+oteAdapter.java:341) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.http11.Http11Processor.service(Http11
+Processor.java:397) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.AbstractProcessorLight.process(Abstra
+ctProcessorLight.java:63) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.coyote.AbstractProtocol$ConnectionHandler.pr
+ocess(AbstractProtocol.java:1272) ~[tomcat-embed-core-11.0.22.jar:
+11.0.22]
+        at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.
+doRun(NioEndpoint.java:1801) ~[tomcat-embed-core-11.0.22.jar:11.0.
+22]
+        at org.apache.tomcat.util.net.SocketProcessorBase.run(Sock
+etProcessorBase.java:52) ~[tomcat-embed-core-11.0.22.jar:11.0.22]
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWo
+rker(ThreadPoolExecutor.java:946) ~[tomcat-embed-core-11.0.22.jar:
+11.0.22]
+        at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worke
+r.run(ThreadPoolExecutor.java:480) ~[tomcat-embed-core-11.0.22.jar
+:11.0.22]
+        at org.apache.tomcat.util.threads.TaskThread$WrappingRunna
+ble.run(TaskThread.java:57) ~[tomcat-embed-core-11.0.22.jar:11.0.2
+2]
+        at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:n
+a]
+
+

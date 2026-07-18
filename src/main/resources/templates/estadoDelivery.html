@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Control de Delivery</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/estadoDelivery.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+    <main class="container">
+        
+<section class="panel filters-panel">
+    <h2>Panel de Filtros y Búsqueda de Envíos</h2>
+    <!-- Agregamos ID al formulario para capturarlo en JS -->
+    <form class="filters-grid" id="formFiltros">
+        <div class="filter-group">
+            <input type="text" id="filtroBuscar" placeholder="Buscar por Cliente, Dirección o ID Pedido">
+        </div>
+        <div class="filter-group">
+            <select id="filtroEstado">
+                <option value="">Filtrar por Estado (Todos)</option>
+                <option value="preparacion">En Preparación</option>
+                <option value="camino">En Camino</option>
+                <option value="entregado">Entregado</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <select id="filtroMotorizado">
+                <option value="">Asignar / Filtrar por Motorizado (Todos)</option>
+                <option th:each="rep : ${repartidores}" th:value="${rep.idRepartidor}" th:text="${rep.nombreRepartidor}"></option>
+            </select>
+        </div>
+        <div class="filter-group date-range">
+            <label>Rango de Horas:</label>
+            <input type="text" placeholder="[HH:MM]">
+            <span>a</span>
+            <input type="text" placeholder="[HH:MM]">
+        </div>
+        <div class="filter-group">
+            <button type="submit" class="btn-primary btn-block">
+                <i class="fa-solid fa-magnifying-glass"></i> ACTUALIZAR MONITOREO
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="panel history-panel">
+    <h2>Pedidos en Ruta y Estados de Entrega</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Pedido ID</th>
+                    <th>Cliente / Teléfono</th>
+                    <th>Dirección de Entrega</th>
+                    <th>Repartidor Asignado</th>
+                    <th>Total a Cobrar</th>
+                    <th>Estado Delivery</th>
+                </tr>
+            </thead>
+            <!-- Le asignamos un ID único al cuerpo de la tabla -->
+            <tbody id="tablaDeliveriesBody">
+                <!-- JS insertará aquí las filas de la base de datos de manera dinámica -->
+            </tbody>
+        </table>
+    </div>
+</section>
+                
+
+        <div class="bottom-grid">
+            
+            <section class="panel detail-panel">
+                <h2>Detalle del Envío Seleccionado</h2>
+                <div class="detail-content">
+                    
+                    <div class="company-info">
+                        <h3>Pedido #D0842</h3>
+                        <p><strong>Cliente:</strong> Carlos Mendoza</p>
+                        <p><strong>Dirección:</strong> Av. Larco 456, Miraflores</p>
+                        <p><strong>Referencia:</strong> Frente al Parque Salazar</p>
+                        <p><strong>Teléfono:</strong> 987-654-321</p>
+                    </div>
+
+                    <div class="invoice-summary">
+                        <h4>Productos a Entregar</h4>
+                        <p class="items-preview">2x Whisky Johnnie Walker Black<br>1x Pack Cerveza Corona (6 uds)<br>1x Hielo en Bolsa Grande</p>
+                        
+                        <div class="invoice-breakdown">
+                            <div class="inv-line"><span>Productos:</span> <span>S/. 230.00</span></div>
+                            <div class="inv-line"><span>Costo Delivery:</span> <span>S/. 15.00</span></div>
+                            <hr class="dashed-hr">
+                            <div class="inv-line total"><span>Total a Pagar (Efectivo):</span> <span>S/. 245.00</span></div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary">CAMBIAR A 'ENTREGADO'</button>
+                        <button class="btn-primary">NOTIFICAR POR WHATSAPP</button>
+                        <button class="btn-secondary" style="border-color: #a43333; color: #ff8888;">REPORTAR INCIDENCIA</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="metrics-sidebar">
+                
+                <div class="metric-box alert-box">
+                    <span>Pedidos en Ruta Activa:</span>
+                    <strong>2 En Camino</strong>
+                </div>
+
+                <div class="panel summary-box">
+                    <div class="metric-row">
+                        <span>Total Entregas Hoy:</span>
+                        <strong>42 Pedidos</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Tiempo Promedio:</span>
+                        <span>28 min</span>
+                    </div>
+                </div>
+
+                <div class="panel extra-info-box">
+                    <p>Estado de la Flota:</p>
+                    <h4>Moto 1: Libre | Moto 2: En Ruta</h4>
+                    <p class="pending-orders">Pedidos por despachar en cocina: <strong>4</strong></p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const formFiltros = document.getElementById("formFiltros");
+    
+    if (formFiltros) {
+        formFiltros.addEventListener("submit", (e) => {
+            e.preventDefault(); // Detener recarga de página
+            cargarPedidosFiltrados();
+        });
+    }
+
+    // Cargar los datos iniciales al entrar a la página
+    cargarPedidosFiltrados();
+});
+
+function cargarPedidosFiltrados() {
+    const buscar = document.getElementById("filtroBuscar").value;
+    const estado = document.getElementById("filtroEstado").value;
+
+    // Construimos la URL con los parámetros de consulta dinámicos
+    const url = `/api/deliveries/filtrar?buscar=${encodeURIComponent(buscar)}&estado=${encodeURIComponent(estado)}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error("Error obteniendo el listado filtrado.");
+            return response.json();
+        })
+        .then(pedidos => {
+            renderizarTabla(pedidos);
+        })
+        .catch(error => console.error("Error al filtrar deliveries:", error));
+}
+
+function renderizarTabla(pedidos) {
+    const tbody = document.getElementById("tablaDeliveriesBody");
+    tbody.innerHTML = ""; // Limpiar filas anteriores
+
+    if (pedidos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888; padding:20px;">No se encontraron pedidos con los filtros aplicados.</td></tr>`;
+        return;
+    }
+
+    pedidos.forEach((p, index) => {
+        const tr = document.createElement("tr");
+        
+        // Definir clases CSS dinámicas para los badges de estado
+        let badgeClass = "status-pending";
+        if (p.estado.includes("Preparación")) badgeClass = "status-prep";
+        if (p.estado.includes("Camino")) badgeClass = "status-road";
+        if (p.estado.includes("Entregado")) badgeClass = "status-done";
+
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>D00${p.idDelivery}</td>
+            <td class="text-highlight">${p.clienteNombre} (${p.clienteTelefono})</td>
+            <td>${p.direccionEnvio}</td>
+            <td>${p.repartidor}</td>
+            <td>S/. ${parseFloat(p.total).toFixed(2)}</td>
+            <td><span class="badge ${badgeClass}">${p.estado}</span></td>
+        `;
+        
+        // Evento opcional para cuando hagan clic en una fila, cargue el detalle abajo
+        tr.addEventListener("click", () => {
+            document.querySelectorAll("#tablaDeliveriesBody tr").forEach(row => row.classList.remove("selected-row"));
+            tr.classList.add("selected-row");
+            // Aquí podrías llamar a una función para mostrar el detalle completo de p.idDelivery
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+            
+    </script>
+    <script th:src="script.js"></script>
+</body>
+</html>

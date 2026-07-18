@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Gestión de Proveedores y Compras</title>
+    <link rel="stylesheet" href="/css/proveedores.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- HEADER PRINCIPAL -->
+    <header class="main-header">
+        <div class="logo-title">
+            <i class="fa-solid fa-whiskey-glass"></i>
+            <h1>LICORERÍA & TABERNA - GESTIÓN DE PROVEEDORES Y COMPRAS</h1>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- PANEL DE FILTROS Y BÚSQUEDA -->
+        <section class="panel filters-panel">
+            <h2>Panel de Filtros y Búsqueda</h2>
+            <form class="filters-grid">
+                <div class="filter-group">
+                    <input type="text" placeholder="Buscar Proveedor (Nombre, ID, Contacto)">
+                </div>
+                <div class="filter-group">
+                    <select>
+                        <option value="">Filtro por Categoría de Producto Suministrado (Whisky, Cerveza, Ron, etc.)</option>
+                    </select>
+                </div>
+                <div class="filter-group date-range">
+                    <label>Filtro de Compras por Fecha:</label>
+                    <input type="text" placeholder="[DD/MM/AAAA]">
+                    <span>a</span>
+                    <input type="text" placeholder="[DD/MM/AAAA]">
+                </div>
+                <div class="filter-group">
+                    <select>
+                        <option value="">Filtro de Compras por Fecha</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button type="submit" class="btn-primary btn-block">
+                        <i class="fa-solid fa-filter"></i> FILTRAR RESULTADOS
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- HISTORIAL DE COMPRAS Y PROVEEDORES -->
+        <section class="panel history-panel">
+            <h2>Historial de Compras y Proveedores Activos</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Proveedor ID</th>
+                            <th>Nombre <i class="fa-solid fa-sort"></i></th>
+                            <th>Contacto Principal <i class="fa-solid fa-sort"></i></th>
+                            <th>Categorías Suministradas <i class="fa-solid fa-sort"></i></th>
+                            <th>Última Compra (ID/Fecha)</th>
+                            <th>Total Comprado</th>
+                            <th>Estado (Activo/Inactivo)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="selected-row">
+                            <td>1</td>
+                            <td>P0001</td>
+                            <td class="text-highlight">Distribuidora Licores S.A.</td>
+                            <td>Juan Pérez (j.perez@jj.perezs...)</td>
+                            <td>Whisky, Ron</td>
+                            <td>C0123 / 10/05/2026</td>
+                            <td>S/. 12,350.50</td>
+                            <td class="status-active">Activo</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>P0002</td>
+                            <td>Cervecería Nacional</td>
+                            <td>Ana García (a.garcia@a.garcia...)</td>
+                            <td>Cerveza</td>
+                            <td>C0122 / 08/05/2026</td>
+                            <td>S/. 45,000.00</td>
+                            <td class="status-active">Activo</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>P0003</td>
+                            <td>Destilería Ronera</td>
+                            <td>Carlos Silva (c.silva@cs.silva...)</td>
+                            <td>Ron, Pisco</td>
+                            <td>C0121 / 05/05/2026</td>
+                            <td>S/. 8,900.00</td>
+                            <td class="status-active">Activo</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>P0004</td>
+                            <td>Importadora Tragos Finos</td>
+                            <td>Vendedor1 (contacto@contact...)</td>
+                            <td>Whisky, Tequila</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td class="status-new">Nuevo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- BLOQUE INFERIOR (DETALLE + PANEL METRICAS) -->
+        <div class="bottom-grid">
+            
+            <!-- DETALLE DE COMPRA/PROVEEDOR SELECCIONADO -->
+            <section class="panel detail-panel">
+                <h2>Detalle de Compra/Proveedor Seleccionado</h2>
+                <div class="detail-content">
+                    
+                    <!-- Datos de la Empresa -->
+                    <div class="company-info">
+                        <h3>Distribuidora Licores S.A.</h3>
+                        <p><strong>Nombre:</strong> D. Licores S.A.</p>
+                        <p><strong>Dirección:</strong> Av. Licores 123</p>
+                        <p><strong>Teléfono:</strong> 123-4567</p>
+                        <p><strong>Email:</strong> ventas@dlicores.com</p>
+                    </div>
+
+                    <!-- Datos de la Última Factura -->
+                    <div class="invoice-summary">
+                        <h4>Última Factura (Factura C0123)</h4>
+                        <p class="items-preview">Whisky, Ron<br>Tequila José Cuervo</p>
+                        
+                        <div class="invoice-breakdown">
+                            <div class="inv-line"><span>Última Factura:</span> <span>S/. 12,350.50</span></div>
+                            <div class="inv-line"><span>Subtotal:</span> <span>S/. 48.00</span></div>
+                            <div class="inv-line"><span>Total Ingresos:</span> <span>S/. 12,350.50</span></div>
+                            <hr class="dashed-hr">
+                            <div class="inv-line total"><span>Total</span> <span>S/. 12,350.50</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="action-buttons">
+                        <button class="btn-primary">VER FICHA PROVEEDOR</button>
+                        <button class="btn-primary">NUEVA ORDEN DE COMPRA</button>
+                        <button class="btn-primary">VER HISTORIAL FACTURAS</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LATERAL DERECHO: TOTALES Y METRICAS -->
+            <div class="metrics-sidebar">
+                
+                <!-- Caja Verde Superior -->
+                <div class="metric-box alert-box">
+                    <span>Total Proveedores Registrados:</span>
+                    <strong>18</strong>
+                </div>
+
+                <!-- Caja de Totales Generales -->
+                <div class="panel summary-box">
+                    <div class="metric-row">
+                        <span>Total Compras Mes:</span>
+                        <strong>S/. 78,500.00</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Filtro Activo:</span>
+                        <span>Mayo 2026</span>
+                    </div>
+                </div>
+
+                <!-- Caja de Información Extra -->
+                <div class="panel extra-info-box">
+                    <p>Suministrador Principal:</p>
+                    <h4>Cervecería Nacional (55% Volumen)</h4>
+                    <p class="pending-orders">Órdenes de Compra Pendientes: <strong>3</strong></p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Imprimir Ticket</title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; width: 280px; margin: 0 auto; padding: 10px; }
+        .text-center { text-align: center; }
+        .linea { display: flex; justify-content: space-between; }
+        @media print { .no-print { display: none; } } /* Esconde botones al imprimir */
+    </style>
+</head>
+<body>
+    <div class="text-center">
+        <h2>CORLEONE TABERNA</h2>
+        <p>Ticket: V<span th:text="${venta.idVenta}"></span></p>
+        <p>Atendido por: <span th:text="${venta.usuarioCajero.nombreCompleto}"></span></p>
+    </div>
+    <hr>
+    <div th:each="d : ${venta.detalles}" class="linea">
+        <span th:text="${d.producto.nombreProducto} + ' (x' + ${d.cantidad} + ')'"></span>
+        <span th:text="'S/. ' + ${d.precioUnitario * d.cantidad}"></span>
+    </div>
+    <hr>
+    <div class="linea" style="font-weight: bold;">
+        <span>TOTAL:</span>
+        <span th:text="'S/. ' + ${venta.total}"></span>
+    </div>
+
+    <div class="text-center no-print" style="margin-top: 20px;">
+        <button onclick="window.print()">Imprimir</button>
+    </div>
+
+    <script>
+        // Lanza automáticamente la ventana de impresión al cargar la pestaña
+        window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>
