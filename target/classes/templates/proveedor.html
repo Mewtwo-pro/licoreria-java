@@ -1,0 +1,559 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Gestión de Proveedores y Compras</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/proveedores.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+    
+    <main class="container">
+        
+        <!-- PANEL DE FILTROS Y BÚSQUEDA -->
+
+<!-- PANEL DE FILTROS Y BÚSQUEDA -->
+<section class="panel filters-panel">
+    <h2>Panel de Filtros y Búsqueda</h2>
+    <!-- Agregamos th:action y method="get" -->
+    <form th:action="@{/proveedor}" method="get" class="filters-grid">
+        
+        <div class="filter-group">
+            <!-- Agregamos name="buscar" y th:value para mantener el texto escrito tras recargar -->
+            <input type="text" name="buscar" th:value="${param.buscar}" placeholder="Buscar Proveedor (Nombre, ID, Contacto)">
+        </div>
+        
+        <div class="filter-group">
+            <button type="submit" class="btn-primary btn-block">
+                <i class="fa-solid fa-filter"></i> FILTRAR RESULTADOS
+            </button>
+        </div>
+    </form>
+</section>
+        <!-- HISTORIAL DE COMPRAS Y PROVEEDORES -->
+        <section class="panel history-panel">
+            <h2>Historial de Compras y Proveedores Activos</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Proveedor ID</th>
+                            <th>Nombre <i class="fa-solid fa-sort"></i></th>
+                            <th>Contacto Principal <i class="fa-solid fa-sort"></i></th>
+                            <th>RUC</th>
+                            <th>Teléfono / Email</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Iteración de Proveedores de la base de datos -->
+                        <tr th:each="prov, status : ${proveedores}"
+                            class="proveedor-row"
+                            th:data-id="${#numbers.formatInteger(prov.idProveedor, 4)}"
+                            th:data-nombre="${prov.nombreProveedor}"
+                            th:data-ruc="${prov.ruc}"
+                            th:data-contacto="${prov.contacto}"
+                            th:data-telefono="${prov.telefono}"
+                            th:data-email="${prov.email}"
+                            style="cursor: pointer;">
+                        
+                            <td th:text="${status.count}">1</td>
+                            
+                            <td th:text="'P' + ${#numbers.formatInteger(prov.idProveedor, 4)}">P0001</td>
+                            <td class="text-highlight" th:text="${prov.nombreProveedor}">Distribuidora Licores</td>
+                            <td th:text="${prov.contacto}">Juan Pérez</td>
+                            <td th:text="${prov.ruc}">20123456789</td>
+                            <td th:text="${prov.telefono + ' / ' + prov.email}">987654321 / ventas@mail.com</td>
+                            <td class="status-active">Activo</td>
+                        </tr>
+                        <!-- Fila estática en caso de que la lista venga vacía -->
+                        <tr th:if="${#lists.isEmpty(proveedores)}">
+                            <td colspan="7" style="text-align: center;">No hay proveedores registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- BLOQUE INFERIOR (DETALLE + PANEL METRICAS) -->
+        <div class="bottom-grid">
+            
+            <!-- DETALLE DE COMPRA/PROVEEDOR (Tomando dinámicamente el primero de la lista como ejemplo) -->
+            <section class="panel detail-panel" th:if="${not #lists.isEmpty(proveedores)}">
+                <h2>Detalle de Proveedor Seleccionado</h2>
+                <div class="detail-content">
+                    <div class="supplier-detail-card">
+                        <!-- Añadimos IDs estratégicos a las etiquetas -->
+                        <h3 id="detail-nombre">Seleccione un proveedor</h3>
+                        <p><strong>Código:</strong> <span id="detail-codigo">P----</span></p>
+                        <p><strong>RUC:</strong> <span id="detail-ruc">-</span></p>
+                        <p><strong>Contacto:</strong> <span id="detail-contacto">-</span></p>
+                        <p><strong>Teléfono:</strong> <span id="detail-telefono">-</span></p>
+                        <p><strong>Email:</strong> <span id="detail-email">-</span></p>
+                    </div>
+                    <div class="action-buttons">
+                        <button type="button" id="btn-abrir-modal-proveedor" class="btn-primary">AGREGAR NUEVO PROVEEDOR</button>
+                        <button type="button" id="btn-nueva-orden" class="btn-primary">NUEVA ORDEN DE COMPRA</button>
+                        <button type="button" id="btn-ver-facturas" class="btn-primary">VER HISTORIAL FACTURAS</button>
+                    </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LATERAL DERECHO: TOTALES Y METRICAS -->
+            <div class="metrics-sidebar">
+                
+                <!-- Caja Verde Superior Dinámica -->
+                <div class="metric-box alert-box">
+                    <span>Total Proveedores Registrados:</span>
+                    <!-- Imprime dinámicamente el contador enviado por el modelo -->
+                    <strong th:text="${totalProveedores}">18</strong>
+                </div>
+<!-- Caja de Totales Generales -->
+<div class="panel summary-box">
+    <div class="metric-row">
+        <span>Total Compras Mes:</span>
+        <!-- th:numbers.formatDecimal le da un formato limpio de moneda (S/. 78,500.00) -->
+        <strong th:text="'S/. ' + ${#numbers.formatDecimal(totalComprasMes, 1, 'COMMA', 2, 'POINT')}">S/. 0.00</strong>
+    </div>
+    <div class="metric-row">
+        <span>Filtro Activo:</span>
+        <span th:text="${filtroPeriodoActivo}">Mes Año</span>
+    </div>
+</div>
+
+                <div class="panel extra-info-box">
+                    <p>Usuario Activo en el Sistema:</p>
+                    <!-- Muestra el nombre del usuario logueado dinámicamente -->
+                    <h4 th:text="${usuarioLogueado != null ? usuarioLogueado.nombreCompleto : 'Invitado'}">Admin</h4>
+                </div>
+            </div>
+
+        </div>
+    </main>
+        <!-- MODAL PARA NUEVA ÓRDEN DE COMPRA DETALLADA -->
+<div id="modal-orden" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(26, 19, 16, 0.75); overflow-y: auto;">
+    <div class="modal-content" style="background-color: #2b231f; color: #f5ebe6; margin: 5% auto; padding: 25px; width: 55%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 1px solid #4a3b32;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="color: #e6ccb2; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Nueva Órden de Compra</h2>
+            <!-- Botón en la esquina superior para agregar múltiples productos -->
+            <button type="button" id="btn-agregar-producto-form" class="btn-primary" style="background-color: #ddb892; color: #2b231f; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+                <i class="fa-solid fa-plus"></i> Agregar Otro Producto
+            </button>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #4a3b32; margin-bottom: 20px;">
+
+        <form th:action="@{/proveedor/guardar-orden-detallada}" method="post" id="form-orden-compra">
+            <!-- Datos fijos del proveedor seleccionado -->
+            <input type="hidden" id="modal-proveedor-id" name="idProveedor">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="color: #ddb892;"><strong>Proveedor Destinatario:</strong></label>
+                <input type="text" id="modal-proveedor-nombre" readonly style="width: 100%; background: #3d312a; color: #f5ebe6; padding: 10px; border: 1px solid #5c4d42; border-radius: 6px; font-weight: bold; margin-top: 5px; box-sizing: border-box;">
+            </div>
+
+            <!-- CONTENEDOR DONDE SE IRÁN AGREGANDO LOS PRODUCTOS -->
+            <div id="productos-dinamicos-contenedor">
+                
+                <!-- BLOQUE DE PRODUCTO INDIVIDUAL (TEMPLATE INICIAL) -->
+                <div class="producto-form-block" style="border: 1px solid #4a3b32; border-radius: 8px; margin-bottom: 15px; background: #332924; overflow: hidden;">
+                    
+                    <!-- Barra de encabezado del bloque (Sirve para hacer clic y colapsar) -->
+                    <div class="block-header" style="background: #4a3b32; padding: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #5c4d42;">
+                        <span class="producto-titulo" style="font-weight: bold; color: #e6ccb2;"><i class="fa-solid fa-chevron-down"></i> Producto #1</span>
+                        <div>
+                            <button type="button" class="btn-colapsar" style="background: none; border: none; color: #b79477; margin-right: 10px; cursor: pointer; font-weight: 500;"><i class="fa-solid fa-eye-slash"></i> Ocultar</button>
+                            <button type="button" class="btn-eliminar-block" style="background: none; border: none; color: #ff6b6b; display: none; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Campos editables del producto (Se ocultarán al colapsar) -->
+                    <div class="block-body" style="padding: 15px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 12px;">
+                            <div>
+                                <label style="display:block; margin-bottom:5px; color: #ddb892;">Nombre del nuevo producto:</label>
+                                <input type="text" name="nombresProductos[]" required placeholder="Ej. Ron Cartavio 1L" style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                            </div>
+                            <div>
+                                <label style="display:block; margin-bottom:5px; color: #ddb892;">Categoría:</label>
+                                <select name="categoriasProductos[]" required style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                                    <option value="" style="background: #2b231f;">Seleccione...</option>
+                                    <option th:each="cat : ${categorias}" th:value="${cat.idCategoria}" th:text="${cat.nombreCategoria}" style="background: #2b231f;"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label style="display:block; margin-bottom:5px; color: #ddb892;">Precio Compra Unitario (S/.):</label>
+                                <input type="number" step="0.01" name="preciosCompra[]" required placeholder="0.00" class="input-precio-compra" style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                            </div>
+                            <div>
+                                <label style="display:block; margin-bottom:5px; color: #ddb892;">Cantidad a Comprar (Stock Inicial):</label>
+                                <input type="number" name="cantidadesStock[]" required placeholder="Cantidad" class="input-cantidad-stock" style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- FIN BLOQUE TEMPLATE -->
+
+            </div>
+
+            <!-- PIE DEL MODAL: TOTAL GLOBAL Y ACCIONES -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 25px; background: #332924; padding: 15px; border-radius: 8px; border: 1px solid #4a3b32;">
+                <div>
+                    <span style="font-size: 1.1rem; font-weight: bold; color: #e6ccb2;">MONTO TOTAL COMPRA:</span>
+                    <label id="lbl-monto-total-global" style="font-size: 1.4rem; font-weight: 800; color: #72ef9d; margin-left: 10px;">S/. 0.00</label>
+                </div>
+                <div>
+                    <button type="button" id="btn-cerrar-modal" class="btn-secondary" style="padding: 10px 20px; margin-right: 10px; border-radius: 6px; background: transparent; color: #ddb892; border: 1px solid #5c4d42; cursor: pointer; font-weight: bold;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="padding: 10px 25px; background-color: #72ef9d; color: #1a1310; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Procesar e Insertar Datos</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL PARA REGISTRAR NUEVO PROVEEDOR -->
+<div id="modal-proveedor" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(26, 19, 16, 0.75);">
+    <div class="modal-content" style="background-color: #2b231f; color: #f5ebe6; margin: 8% auto; padding: 25px; width: 40%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 1px solid #4a3b32;">
+        <h2 style="color: #e6ccb2; margin: 0 0 10px 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Registrar Nuevo Proveedor</h2>
+        <hr style="border: 0; border-top: 1px solid #4a3b32; margin-bottom: 20px;">
+        
+        <form th:action="@{/proveedor/guardar}" method="post">
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Nombre / Razón Social:</strong></label>
+                <input type="text" name="nombreProveedor" required placeholder="Ej. Distribuidora Central S.A." style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>RUC (11 dígitos):</strong></label>
+                <input type="text" name="ruc" maxlength="11" placeholder="Ej. 20123456789" style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Contacto Principal:</strong></label>
+                <input type="text" name="contacto" placeholder="Ej. Carlos Mendoza" style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Teléfono:</strong></label>
+                <input type="text" name="telefono" placeholder="Ej. 987654321" style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Correo Electrónico:</strong></label>
+                <input type="email" name="email" placeholder="Ej. ventas@proveedor.com" style="width: 100%; padding: 8px; background: #2b231f; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+            
+            <div style="text-align: right; border-top: 1px solid #4a3b32; padding-top: 15px;">
+                <button type="button" id="btn-cerrar-modal-proveedor" class="btn-secondary" style="padding: 8px 15px; margin-right: 10px; border-radius: 6px; background: transparent; color: #ddb892; border: 1px solid #5c4d42; cursor: pointer; font-weight: bold;">Cancelar</button>
+                <button type="submit" class="btn-primary" style="padding: 8px 20px; background-color: #ddb892; color: #2b231f; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Agregar Proveedor</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- MODAL DE HISTORIAL DE FACTURAS -->
+<div id="modal-historial" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(26, 19, 16, 0.75); overflow-y: auto;">
+    <div class="modal-content" style="background-color: #2b231f; color: #f5ebe6; margin: 8% auto; padding: 25px; width: 50%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 1px solid #4a3b32;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="color: #e6ccb2; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                Historial de Facturas: <span id="historial-proveedor-nombre" style="color: #ddb892;">-</span>
+            </h2>
+            <button type="button" id="btn-cerrar-historial" style="background: none; border: none; font-size: 1.8rem; color: #b79477; cursor: pointer; transition: color 0.3s; line-height: 1;">&times;</button>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #4a3b32; margin-bottom: 20px;">
+        
+        <div style="max-height: 350px; overflow-y: auto; margin-top: 15px; border: 1px solid #4a3b32; border-radius: 8px; background: #231c19;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead style="background-color: #3d312a; position: sticky; top: 0; z-index: 10;">
+                    <tr style="border-bottom: 2px solid #4a3b32;">
+                        <th style="padding: 12px 15px; color: #ddb892; font-weight: bold;">N° Factura (ID)</th>
+                        <th style="padding: 12px 15px; color: #ddb892; font-weight: bold;">Fecha Emisión</th>
+                        <th style="padding: 12px 15px; color: #ddb892; font-weight: bold;">Monto Total</th>
+                        <th style="padding: 12px 15px; color: #ddb892; font-weight: bold;">Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-historial-cuerpo">
+                    <!-- Las filas se insertarán dinámicamente aquí con JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: right; margin-top: 20px; border-top: 1px solid #4a3b32; padding-top: 15px;">
+            <button type="button" onclick="document.getElementById('modal-historial').style.display='none'" style="padding: 8px 20px; border-radius: 6px; background: transparent; color: #ddb892; border: 1px solid #5c4d42; cursor: pointer; font-weight: bold;">Cerrar Ventana</button>
+        </div>
+    </div>
+</div>
+        
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Capturamos todas las filas de la tabla que tengan la clase 'proveedor-row'
+    const filas = document.querySelectorAll(".proveedor-row");
+
+    // 2. Capturamos los elementos del panel de detalle donde volcaremos la información
+    const detailCodigo = document.getElementById("detail-codigo");
+    const detailNombre = document.getElementById("detail-nombre");
+    const detailRuc = document.getElementById("detail-ruc");
+    const detailContacto = document.getElementById("detail-contacto");
+    const detailTelefono = document.getElementById("detail-telefono");
+    const detailEmail = document.getElementById("detail-email");
+
+    // 3. Asignamos el evento de clic a cada fila
+    filas.forEach(fila => {
+        fila.addEventListener("click", () => {
+            // Remover clase activa de cualquier otra fila previa
+            filas.forEach(f => f.classList.remove("table-active-row"));
+            // Añadir clase a la fila actual
+            fila.classList.add("table-active-row");
+
+            // 4. Extraemos los valores guardados en los atributos 'data-*' de la fila
+            const codigo = fila.getAttribute("data-id");
+            const nombre = fila.getAttribute("data-nombre");
+            const ruc = fila.getAttribute("data-ruc");
+            const contacto = fila.getAttribute("data-contacto");
+            const telefono = fila.getAttribute("data-telefono");
+            const email = fila.getAttribute("data-email");
+
+            // 5. Actualizamos el contenido de texto del panel lateral
+            if (detailCodigo) detailCodigo.textContent = "P" + codigo;
+            if (detailNombre) detailNombre.textContent = nombre ? nombre : "Sin Nombre";
+            if (detailRuc) detailRuc.textContent = ruc ? ruc : "-";
+            if (detailContacto) detailContacto.textContent = contacto ? contacto : "-";
+            if (detailTelefono) detailTelefono.textContent = telefono ? telefono : "-";
+            if (detailEmail) detailEmail.textContent = email ? email : "-";
+        });
+    });
+
+    // ========================================================
+    // LÓGICA DEL MODAL (CORREGIDA SU UBICACIÓN)
+    // ========================================================
+    const btnNuevaOrden = document.getElementById("btn-nueva-orden");
+    const modal = document.getElementById("modal-orden");
+    const btnCerrarModal = document.getElementById("btn-cerrar-modal");
+
+    const modalProvId = document.getElementById("modal-proveedor-id");
+    const modalProvNombre = document.getElementById("modal-proveedor-nombre");
+
+    // Validamos primero que el botón exista en el HTML actual antes de asignarle el evento
+    if (btnNuevaOrden) {
+        btnNuevaOrden.addEventListener("click", () => {
+            const proveedorCodigo = detailCodigo ? detailCodigo.textContent.replace("P", "").trim() : "----";
+            const proveedorNombre = detailNombre ? detailNombre.textContent.trim() : "Seleccione un proveedor";
+
+            // Validación por si no ha seleccionado ningún proveedor de la tabla todavía
+            if (proveedorCodigo === "----" || proveedorNombre === "Seleccione un proveedor" || proveedorCodigo === "") {
+                alert("Por favor, seleccione un proveedor de la tabla antes de crear una orden.");
+                return;
+            }
+
+            // Pasamos los datos dinámicos del proveedor al formulario del Modal
+            if (modalProvId) modalProvId.value = parseInt(proveedorCodigo, 10);
+            if (modalProvNombre) modalProvNombre.value = proveedorNombre;
+
+            // Mostramos el modal en pantalla
+            if (modal) modal.style.display = "block";
+        });
+    }
+
+    // Cerrar el modal si le da a cancelar
+    if (btnCerrarModal && modal) {
+        btnCerrarModal.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
+        
+    const btnAbrirProv = document.getElementById("btn-abrir-modal-proveedor");
+    const modalProv = document.getElementById("modal-proveedor");
+    const btnCerrarProv = document.getElementById("btn-cerrar-modal-proveedor");
+    if (btnAbrirProv && modalProv) {
+        btnAbrirProv.addEventListener("click", () => {
+            modalProv.style.display = "block"; // Muestra el formulario flotante
+        });
+    }
+    if (btnCerrarProv && modalProv) {
+        btnCerrarProv.addEventListener("click", () => {
+            modalProv.style.display = "none"; // Oculta el formulario flotante
+        });
+    }  
+
+    // ========================================================
+    // NUEVA LÓGICA DE FORMULARIOS DETALLADOS Y COLAPSABLES
+    // ========================================================
+    const contenedorProductos = document.getElementById("productos-dinamicos-contenedor");
+    const btnAgregarForm = document.getElementById("btn-agregar-producto-form");
+    const lblTotalGlobal = document.getElementById("lbl-monto-total-global");
+
+    // Función matemática para calcular el costo total de la orden entera
+    function calcularTotalGlobal() {
+        let total = 0;
+        const bloques = contenedorProductos.querySelectorAll(".producto-form-block");
+        
+        bloques.forEach(bloque => {
+            const precio = parseFloat(bloque.querySelector(".input-precio-compra").value) || 0;
+            const cantidad = parseInt(bloque.querySelector(".input-cantidad-stock").value) || 0;
+            total += (precio * cantidad);
+        });
+        
+        lblTotalGlobal.textContent = "S/. " + total.toFixed(2);
+    }
+
+    // Escuchar cambios en los inputs de precios y cantidades para re-calcular el total
+    if (contenedorProductos) {
+        contenedorProductos.addEventListener("input", (e) => {
+            if (e.target.classList.contains("input-precio-compra") || e.target.classList.contains("input-cantidad-stock")) {
+                calcularTotalGlobal();
+            }
+        });
+    }
+
+    // Lógica para añadir dinámicamente un nuevo bloque de formulario
+    if (btnAgregarForm) {
+        btnAgregarForm.addEventListener("click", () => {
+            const bloquesActuales = contenedorProductos.querySelectorAll(".producto-form-block");
+            
+            // Clonamos el primer bloque (el template base)
+            const nuevoBloque = bloquesActuales[0].cloneNode(true);
+            
+            // Limpiamos los valores de los inputs clonados
+            nuevoBloque.querySelectorAll("input, select").forEach(input => input.value = "");
+            
+            // Actualizamos el número del título visualmente
+            const numeroProducto = bloquesActuales.length + 1;
+            nuevoBloque.querySelector(".producto-titulo").innerHTML = `<i class="fa-solid fa-chevron-down"></i> Producto #${numeroProducto}`;
+            
+            // Hacemos visible su botón de eliminar ya que no es el bloque principal único
+            const btnEliminar = nuevoBloque.querySelector(".btn-eliminar-block");
+            btnEliminar.style.display = "inline-block";
+            
+            // Nos aseguramos que el cuerpo inicie visible al agregarse
+            nuevoBloque.querySelector(".block-body").style.display = "block";
+            nuevoBloque.querySelector(".btn-colapsar").innerHTML = '<i class="fa-solid fa-eye-slash"></i> Ocultar';
+
+            // Añadimos el nuevo bloque al contenedor principal del modal
+            contenedorProductos.appendChild(nuevoBloque);
+            calcularTotalGlobal();
+        });
+    }
+
+    // Evento Delegado para Colapsar, Mostrar o Eliminar bloques individuales
+    if (contenedorProductos) {
+        contenedorProductos.addEventListener("click", (e) => {
+            // 1. Si hace clic en la barra del encabezado o en el botón "Ocultar / Mostrar"
+            const header = e.target.closest(".block-header");
+            const btnColapsar = e.target.closest(".btn-colapsar");
+            
+            if (header || btnColapsar) {
+                const bloque = e.target.closest(".producto-form-block");
+                const body = bloque.querySelector(".block-body");
+                const boton = bloque.querySelector(".btn-colapsar");
+                const tituloIcon = bloque.querySelector(".producto-titulo i");
+
+                if (body.style.display === "none") {
+                    body.style.display = "block";
+                    boton.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Ocultar';
+                    tituloIcon.className = "fa-solid fa-chevron-down";
+                } else {
+                    body.style.display = "none";
+                    boton.innerHTML = '<i class="fa-solid fa-eye"></i> Mostrar Campos';
+                    tituloIcon.className = "fa-solid fa-chevron-right";
+                }
+                return;
+            }
+
+            // 2. Si hace clic en el botón de eliminar del bloque
+            const btnEliminar = e.target.closest(".btn-eliminar-block");
+            if (btnEliminar) {
+                const bloque = e.target.closest(".producto-form-block");
+                bloque.remove();
+                
+                // Re-enumerar los títulos restantes para mantener el orden de Producto #1, #2...
+                contenedorProductos.querySelectorAll(".producto-form-block").forEach((b, index) => {
+                    b.querySelector(".producto-titulo").innerHTML = `<i class="fa-solid fa-chevron-down"></i> Producto #${index + 1}`;
+                });
+                
+                calcularTotalGlobal();
+            }
+        });
+    }
+
+    // ========================================================
+    // CONTROL DEL MODAL DE HISTORIAL DE FACTURAS
+    // ========================================================
+    const btnVerFacturas = document.getElementById("btn-ver-facturas");
+    const modalHistorial = document.getElementById("modal-historial");
+    const btnCerrarHistorial = document.getElementById("btn-cerrar-historial");
+    const tablaCuerpo = document.getElementById("tabla-historial-cuerpo");
+    const historialNombreProv = document.getElementById("historial-proveedor-nombre");
+
+    if (btnVerFacturas) {
+        btnVerFacturas.addEventListener("click", () => {
+            const codigo = detailCodigo ? detailCodigo.textContent.replace("P", "").trim() : "----";
+            const nombre = detailNombre ? detailNombre.textContent.trim() : "Seleccione un proveedor";
+
+            if (codigo === "----" || nombre === "Seleccione un proveedor" || codigo === "") {
+                alert("Por favor, seleccione un proveedor de la tabla para ver sus facturas.");
+                return;
+            }
+
+            // Colocar el nombre en el título del modal
+            historialNombreProv.textContent = nombre;
+            
+            // Limpiar la tabla antes de cargar nuevos datos
+            tablaCuerpo.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:10px;">Cargando facturas...</td></tr>';
+            
+            // Abrir el contenedor flotante
+            modalHistorial.style.display = "block";
+
+            // Llamada asíncrona a la API de Spring Boot
+            fetch(`/proveedor/api/facturas?idProveedor=${parseInt(codigo, 10)}`)
+                .then(response => response.json())
+                .then(facturas => {
+                    tablaCuerpo.innerHTML = ""; // Vaciar mensaje de carga
+
+                    if (facturas.length === 0) {
+                        tablaCuerpo.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:10px;">No se registraron facturas para este proveedor.</td></tr>';
+                        return;
+                    }
+
+                    // Iterar las facturas devueltas por la base de datos
+                    facturas.forEach(f => {
+                        const fecha = f.fechaOrden ? new Date(f.fechaOrden).toLocaleDateString() : 'N/A';
+                        const fila = document.createElement("tr");
+                        fila.style.borderBottom = "1px solid #dee2e6";
+                        
+                        fila.innerHTML = `
+                            <td style="padding: 10px; font-weight: bold;">FAC-${String(f.idOrden).padStart(4, '0')}</td>
+                            <td style="padding: 10px;">${fecha}</td>
+                            <td style="padding: 10px; color: #28a745; font-weight: bold;">S/. ${f.montoTotal.toFixed(2)}</td>
+                            <td style="padding: 10px;"><span class="${f.estado === 'Recibido' ? 'status-active' : 'status-new'}">${f.estado}</span></td>
+                        `;
+                        tablaCuerpo.appendChild(fila);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    tablaCuerpo.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:10px;">Error al conectar con el servidor.</td></tr>';
+                });
+        });
+    }
+
+    if (btnCerrarHistorial) {
+        btnCerrarHistorial.addEventListener("click", () => {
+            modalHistorial.style.display = "none";
+        });
+    }
+}); // Este es el único cierre global del DOMContentLoaded
+</script>
+        
+    <script th:src="@{/script.js}"></script>
+</body>
+</html>

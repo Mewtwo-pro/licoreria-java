@@ -1,0 +1,103 @@
+/* Paleta de Colores de la Licorería */
+:root {
+    --bg-main: #141411;
+    --bg-card: #20211a;
+    --border-color: #313329;
+    --text-color: #e2e3db;
+    --text-muted: #8e9182;
+    --brand-green: #387c44;
+    --brand-green-hover: #469c55;
+    --alert-red: #9c3838;
+    --gold: #c3a44c;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+button { cursor: pointer; font-weight: bold; border-radius: 4px; border: none; transition: 0.2s; }
+.btn-success { background-color: var(--brand-green); color: white; padding: 8px 15px; }
+.btn-success:hover { background-color: var(--brand-green-hover); }
+.btn-danger { background-color: var(--alert-red); color: white; padding: 8px 15px; }
+.btn-block { width: 100%; padding: 12px; font-size: 1rem; margin-top: 10px; }
+.btn-outline { background: transparent; border: 1px solid var(--brand-green); color: var(--text-color); }
+
+/* Grid del Dashboard */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 15px;
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.card h3 { margin-top: 0; font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: #fff; text-transform: uppercase;}
+.subtitle { color: var(--gold); margin: 5px 0 15px 0; font-size: 0.9rem; font-weight: bold; }
+
+/* Formulario */
+.form-registro { display: flex; flex-direction: column; gap: 12px; }
+.input-container { display: flex; flex-direction: column; gap: 5px; }
+.input-container label { font-size: 0.8rem; color: var(--text-muted); font-weight: bold; }
+.input-container input, .input-container select {
+    background-color: #141511; border: 1px solid var(--border-color); padding: 8px; color: #fff; border-radius: 4px; font-size: 0.95rem;
+}
+.password-wrapper { position: relative; display: flex; align-items: center; }
+.password-wrapper input { width: 100%; }
+.password-wrapper i { position: absolute; right: 10px; color: var(--text-muted); cursor: pointer; }
+
+/* Tabla */
+.table-responsive { max-height: 220px; overflow-y: auto; background-color: #141511; border-radius: 4px; border: 1px solid var(--border-color); }
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+th, td { padding: 10px; border-bottom: 1px solid var(--border-color); }
+th { background-color: #1a1b15; color: var(--gold); position: sticky; top: 0; }
+.status-active { color: #5cb85c; font-weight: bold; }
+.row-selected { background-color: #2c3021; }
+.table-actions { margin-top: 15px; display: flex; gap: 10px; }
+
+/* Sección Privilegios */
+.privilegios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+.priv-col h4 { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; border-bottom: 1px solid #2a2b23; padding-bottom: 3px;}
+.checkbox-container { display: block; font-size: 0.85rem; margin-bottom: 6px; cursor: pointer; }
+
+/* Widgets de Resumen */
+.resumen-widgets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+.widget { background-color: #1b1c16; padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); text-align: center;}
+.widget span { font-size: 0.75rem; color: var(--text-muted); display: block; }
+.total-ingresos h2 { color: #5cb85c; margin: 5px 0 0 0; font-size: 1.2rem; }
+.badge-color { background-color: #d97706; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; display: inline-block; margin-top: 5px;}
+
+.resumen-footer-metrics { display: grid; grid-template-columns: 0.8fr 1fr 1fr; gap: 10px; }
+.metric { background-color: #141511; padding: 8px; border-radius: 4px; text-align: center; border: 1px solid var(--border-color);}
+.metric p { font-size: 0.7rem; color: var(--text-muted); margin: 0 0 5px 0; }
+.metric strong { font-size: 1.1rem; color: #fff; }
+.bg-green-dark { background-color: #1c3520; border-color: #274d2e; }
+.bg-green-dark strong { color: #a3e635; }
+
+/* Footer de Estado */
+.main-footer {
+    background-color: var(--bg-card); padding: 8px 20px; display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);
+}
+.btn-footer { background-color: #2e3b2e; color: #a3e635; padding: 5px 15px; border: 1px solid #3f523f; }
+.go-puntoVenta  {
+  flex-grow: 1;
+  display : flex;
+  flex-direction : column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 15px;
+}

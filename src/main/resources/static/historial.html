@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Registro de Ventas</title>
+    <link rel="stylesheet" href="/css/historial.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo-title">
+            <i class="fa-solid fa-bottle-wine"></i> 
+            <h1>LICORERÍA & TABERNA - REGISTRO DE VENTAS E HISTORIAL</h1>
+        </div>
+        <div class="header-buttons">
+            <button class="btn-secondary"><i class="fa-solid fa-arrow-left"></i> Volver al Menú</button>
+            <button class="btn-secondary"><i class="fa-solid fa-file-pdf"></i> Exportar a PDF</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <section class="panel filters-panel">
+            <h2>Panel de Filtros Avanzados</h2>
+            <form class="filters-grid">
+                <div class="filter-group wide">
+                    <input type="text" placeholder="Buscar por Número de Venta (ID)">
+                </div>
+                <div class="filter-group">
+                    <input type="text" placeholder="Filtro por Mesa (1-10, Solo Taberna)">
+                </div>
+                <div class="filter-group">
+                    <select>
+                        <option value="">Filtro por Usuario (Admin/Vendedor)</option>
+                    </select>
+                </div>
+                <div class="filter-group date-range">
+                    <label>Filtro por Fecha:</label>
+                    <input type="text" placeholder="[DD/MM/AAAA]">
+                    <span>a</span>
+                    <input type="text" placeholder="[DD/MM/AAAA]">
+                </div>
+                <div class="filter-group">
+                    <select>
+                        <option value="">Filtro por Categoría (Whisky, Cerveza, Ron, Piqueos)</option>
+                    </select>
+                </div>
+                <div class="filter-group btn-container">
+                    <button type="submit" class="btn-primary btn-block">
+                        <i class="fa-solid fa-filter"></i> FILTRAR RESULTADOS
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel history-panel">
+            <h2>Historial de Ventas</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Venta ID <i class="fa-solid fa-caret-down"></i></th>
+                            <th>Fecha y Hora <i class="fa-solid fa-sort"></i></th>
+                            <th>Usuario <i class="fa-solid fa-sort"></i></th>
+                            <th>Categoría/Items Principales <i class="fa-solid fa-sort"></i></th>
+                            <th>Total Pagado <i class="fa-solid fa-sort"></i></th>
+                            <th>Forma de Pago <i class="fa-solid fa-sort"></i></th>
+                            <th>Ubicación (Licorería/Mesa Taberna) <i class="fa-solid fa-sort"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="selected-row">
+                            <td>1</td>
+                            <td>V00123</td>
+                            <td>13/05/2026 15:30</td>
+                            <td>Admin</td>
+                            <td>Whisky Black Label, Cerveza Cusqueña</td>
+                            <td>S/. 171.10</td>
+                            <td>Efectivo</td>
+                            <td>Mesa 4 Taberna</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>V00122</td>
+                            <td>13/05/2026 14:15</td>
+                            <td>Vendedor1</td>
+                            <td>Tequila José Cuervo, Piqueo</td>
+                            <td>S/. 65.00</td>
+                            <td>Tarjeta</td>
+                            <td>Licorería</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>V00121</td>
+                            <td>13/05/2026 13:00</td>
+                            <td>Admin</td>
+                            <td>Ron Cartavio, Hielo</td>
+                            <td>S/. 48.00</td>
+                            <td>Efectivo</td>
+                            <td>Licorería</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>V00120</td>
+                            <td>12/05/2026 21:00</td>
+                            <td>Vendedor2</td>
+                            <td>Cerveza Cusqueña (6x)</td>
+                            <td>S/. 45.00</td>
+                            <td>Tarjeta</td>
+                            <td>Mesa 8 Taberna</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="bottom-grid">
+            
+            <section class="panel detail-panel">
+                <h2>Detalle de Venta Seleccionada</h2>
+                <div class="detail-content">
+                    
+                    <div class="ticket">
+                        <div class="ticket-header">
+                            <h3>RECEPT DIGITAL</h3>
+                            <p>Rua vairochao admin</p>
+                            <p>VentiID: V00123</p>
+                        </div>
+                        <div class="ticket-body">
+                            <div class="ticket-line"><span>Whisky Black Label</span> <span>S/. 171.10</span></div>
+                            <div class="ticket-line"><span>Cerveza Cusqueña</span> <span>S/. 65.00</span></div>
+                            <hr>
+                            <div class="ticket-line"><span>Subtotal:</span> <span>S/. 48.00</span></div>
+                            <div class="ticket-line"><span>Total Ingresos:</span> <span>S/. 12,350.50</span></div>
+                            <hr>
+                            <div class="ticket-line total"><span>Total</span> <span>S/. 12,350.50</span></div>
+                        </div>
+                    </div>
+
+                    <div class="items-list">
+                        <ol>
+                            <li>Whisky Black Label, Cerveza Cusqueña</li>
+                            <li>Tequila José Cuervo, Piqueo</li>
+                            <li>Ron Cartavio, Hielo</li>
+                        </ol>
+                        <div class="summary-mini">
+                            <p><span>Total:</span> <span>S/. 48.00</span></p>
+                            <p><span>Tarjeta:</span> <span>S/. 45.00</span></p>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary">VER COMPROBANTE</button>
+                        <button class="btn-primary">REIMPRIMIR TICKET</button>
+                        <button class="btn-primary">SOLICITAR DEVOLUCIÓN</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel summary-panel">
+                <div class="metric-row">
+                    <span class="metric-label">Total Ventas:</span>
+                    <span class="metric-value">185</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Total Ingresos:</span>
+                    <span class="metric-value highlight">S/. 12,350.50</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Filtro Activo:</span>
+                    <span class="metric-value">Mayo 2026</span>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+</body>
+</html>

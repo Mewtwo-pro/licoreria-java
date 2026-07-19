@@ -1,0 +1,247 @@
+/* RESET GENERAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+
+.btn-control {
+    background-color: #444;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.main-container {
+    display: flex;
+    flex: 1;
+    padding: 15px;
+    gap: 15px;
+    overflow: hidden;
+}
+
+/* SECCIÓN IZQUIERDA (INVENTARIO) */
+.inventory-section {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.search-input {
+    width: 100%;
+    background-color: #222;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.categories-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.btn-category {
+    background-color: #333;
+    color: #ccc;
+    border: 1px solid #444;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-category.active, .btn-category:hover {
+    background-color: #444;
+    color: #fff;
+    border-color: #666;
+}
+
+/* TABLA DE PRODUCTOS */
+.table-container {
+    flex: 1;
+    background-color: #222;
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #2d2d2d;
+}
+
+th {
+    background-color: #2a2a2a;
+    color: #aaa;
+    position: sticky;
+    top: 0;
+    font-weight: 600;
+}
+
+tbody tr:hover {
+    background-color: #2d2d2d;
+}
+
+/* ALERTAS EN LA TABLA */
+.alert-row {
+    background-color: rgba(218, 165, 32, 0.05);
+}
+
+.alert-critical-row {
+    background-color: rgba(218, 85, 82, 0.05);
+}
+
+.stock-alert {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+.stock-critical {
+    color: #ff4444;
+    font-weight: bold;
+}
+
+/* PANEL LATERAL (DERECHA) */
+.sidebar-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 300px;
+}
+
+.panel {
+    background-color: #222;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 15px;
+}
+
+.panel h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #ddd;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+.actions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-action {
+    background-color: #449d44;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s;
+}
+
+.btn-action:hover {
+    background-color: #398439;
+}
+
+/* DETALLE DEL PRODUCTO */
+.product-detail-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.product-image-placeholder {
+    background-color: #fff;
+    width: 80px;
+    height: 100px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.product-detail-card h4 {
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.detail-info {
+    width: 100%;
+    text-align: left;
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* FOOTER / BARRA DE ESTADO */
+.footer-status {
+    background-color: #1e1e1e;
+    border-top: 1px solid #333;
+    padding: 8px 20px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.green-text {
+    color: #5cb85c;
+    font-weight: bold;
+}
+
+/* Estilo para el botón de categoría seleccionado */
+.btn-category.active {
+    background-color: #0d6efd; /* Color de énfasis (ej. azul) */
+    color: white;
+    font-weight: bold;
+    border-color: #0b5ed7;
+}
+
+/* Estilo visual para la fila seleccionada */
+#inventory-tbody tr.selected-row {
+    background-color: #f0f4f8 !important; /* Cambia a un color suave que combine con tu tema */
+    border-left: 4px solid #0d6efd; /* Pequeño indicador azul al inicio de la fila */
+    cursor: pointer;
+}
+
+/* Cambiar el cursor al pasar por encima para indicar que se puede hacer clic */
+#inventory-tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#inventory-tbody tr:hover {
+    background-color: #595945a3;
+}

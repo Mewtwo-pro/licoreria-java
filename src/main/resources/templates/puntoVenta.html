@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Punto de Venta</title>
+    <link rel="stylesheet" th:href="@{/css/puntoVenta.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos rápidos para el indicador de stock en las tarjetas */
+        .stock-label {
+            display: inline-block;
+            background-color: #333;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        .stock-label.low {
+            background-color: #d8000c;
+        }
+        /* Contenedor fijo de notificaciones para evitar saltos bruscos */
+        #alerta-sistema {
+            transition: opacity 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+
+    <div id="alerta-sistema">
+        <div th:if="${errorStock}" style="background-color: #ffdddd; color: #d8000c; padding: 12px; margin: 10px; border-radius: 5px; text-align: center; font-weight: bold; border: 1px solid #d8000c;">
+            <span th:text="${errorStock}"></span>
+        </div>
+        <div th:if="${successVenta}" style="background-color: #ddffdd; color: #4f8a10; padding: 12px; margin: 10px; border-radius: 5px; text-align: center; font-weight: bold; border: 1px solid #4f8a10;">
+            <span th:text="${successVenta}"></span>
+        </div>
+    </div>
+
+    <main class="main-container">
+        <section class="products-container">
+            <div class="products-header">
+                <h2>Productos Disponibles</h2>
+                <div class="search-box">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" id="input-busqueda" placeholder="Buscar producto por nombre..." onkeyup="filtrarProductos()">
+                </div>
+            </div>
+
+            <div class="products-grid">
+                <div class="product-card" th:each="prod : ${productos}" 
+                     th:id="'prod-' + ${prod.idProducto}"
+                     th:data-id="${prod.idProducto}"
+                     th:data-nombre="${prod.nombreProducto}"
+                     th:data-precio="${prod.precioVenta}"
+                     th:data-stock="${prod.stockActual}"
+                     onclick="agregarAlCarrito(this)">
+                    
+                    <div class="img-container">
+                        <img th:src="${prod.imagenUrl}" th:alt="${prod.nombreProducto}">
+                    </div>
+                    <p class="product-name product-title" th:text="${prod.nombreProducto}">Nombre del Licor</p>
+                    <p class="product-price" th:text="'S/. ' + ${#numbers.formatDecimal(prod.precioVenta, 1, 2)}">S/. 0.00</p>
+                    
+                    <span class="stock-label" 
+                          th:classappend="${prod.stockActual <= 5} ? 'low' : ''"
+                          th:text="'Stock: ' + ${prod.stockActual}">Stock: 0</span>
+                </div>
+            </div>
+        </section>
+                
+        <section class="checkout-panel">
+            <form th:action="@{/puntoVenta/pagar}" method="POST" id="form-venta" class="ticket-box">
+                <h3>Detalle de la Venta</h3>
+                
+                <div class="ticket-lines" id="ticket-lines-container">
+                    <div class="empty-cart-msg" style="text-align: center; color: #888; padding: 20px;">
+                        Carrito Vacío
+                    </div>
+                </div>
+                
+                <hr class="divider">
+                
+                <div class="totals">
+                    <div class="total-line"><span>Subtotal:</span> <span id="txt-subtotal">S/. 0.00</span></div>
+                    <div class="total-line"><span>IGV (18%):</span> <span id="txt-igv">S/. 0.00</span></div>
+                    <div class="total-final"><span>TOTAL A PAGAR:</span> <span class="highlight-total" id="txt-total">S/. 0.00</span></div>
+                </div>
+
+                <input type="hidden" name="total" id="input-total" value="0.00">
+                <input type="hidden" name="tipoPago" id="input-tipo-pago" value="Efectivo">
+                <div id="hidden-inputs-container"></div>
+                
+                <div class="control-box">
+                    <div class="actions-section">
+                        <div class="action-buttons">
+                            <button type="button" class="btn-action" onclick="procesarPago('Efectivo')">PAGAR (EFECTIVO)</button>
+                            <button type="button" class="btn-action" onclick="procesarPago('Tarjeta')">PAGAR (TARJETA)</button>
+                            <button type="button" class="btn-action" onclick="borrarVenta()">BORRAR VENTA</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        let carrito = [];
+
+        // Ocultar alertas automáticamente tras 5 segundos (5000 ms)
+        window.addEventListener('DOMContentLoaded', () => {
+            const alerta = document.getElementById('alerta-sistema');
+            if (alerta) {
+                setTimeout(() => {
+                    alerta.style.opacity = '0';
+                    setTimeout(() => alerta.style.display = 'none', 500);
+                }, 5000);
+            }
+        });
+
+        function agregarAlCarrito(elemento) {
+            const id = elemento.getAttribute('data-id');
+            const nombre = elemento.getAttribute('data-nombre');
+            const precio = parseFloat(elemento.getAttribute('data-precio'));
+            const stockMaximo = parseInt(elemento.getAttribute('data-stock'), 10);
+
+            const itemExistente = carrito.find(item => item.id === id);
+
+            if (itemExistente) {
+                // Validación rápida en el cliente antes de ir a Java
+                if (itemExistente.cantidad >= stockMaximo) {
+                    alert(`No puedes agregar más unidades de ${nombre}. Límite de stock alcanzado.`);
+                    return;
+                }
+                itemExistente.cantidad++;
+            } else {
+                if (stockMaximo <= 0) {
+                    alert(`¡${nombre} no cuenta con stock disponible!`);
+                    return;
+                }
+                carrito.push({ id, nombre, precio, cantidad: 1 });
+            }
+            actualizarTicket();
+        }
+
+        function actualizarTicket() {
+            const container = document.getElementById('ticket-lines-container');
+            container.innerHTML = '';
+
+            if (carrito.length === 0) {
+                container.innerHTML = '<div class="empty-cart-msg" style="text-align: center; color: #888; padding: 20px;">Carrito Vacío</div>';
+                document.getElementById('txt-subtotal').innerText = 'S/. 0.00';
+                document.getElementById('txt-igv').innerText = 'S/. 0.00';
+                document.getElementById('txt-total').innerText = 'S/. 0.00';
+                document.getElementById('input-total').value = '0.00';
+                return;
+            }
+
+            let subtotalTotal = 0;
+
+            carrito.forEach(item => {
+                const totalItem = item.precio * item.cantidad;
+                subtotalTotal += totalItem;
+
+                const linea = document.createElement('div');
+                linea.className = 'ticket-line';
+                linea.innerHTML = `<span>${item.cantidad}x ${item.nombre}</span> <span>S/. ${totalItem.toFixed(2)}</span>`;
+                container.appendChild(linea);
+            });
+
+            const igv = subtotalTotal * 0.18;
+            const totalFinal = subtotalTotal + igv;
+
+            document.getElementById('txt-subtotal').innerText = `S/. ${subtotalTotal.toFixed(2)}`;
+            document.getElementById('txt-igv').innerText = `S/. ${igv.toFixed(2)}`;
+            document.getElementById('txt-total').innerText = `S/. ${totalFinal.toFixed(2)}`;
+            document.getElementById('input-total').value = totalFinal.toFixed(2);
+        }
+
+        function borrarVenta() {
+            if(confirm("¿Está seguro de limpiar la venta actual?")) {
+                carrito = [];
+                actualizarTicket();
+            }
+        }
+
+        function procesarPago(tipo) {
+            if (carrito.length === 0) {
+                alert("El carrito está vacío. Añada productos antes de cobrar.");
+                return;
+            }
+            
+            document.getElementById('input-tipo-pago').value = tipo;
+            
+            const hiddenContainer = document.getElementById('hidden-inputs-container');
+            hiddenContainer.innerHTML = ''; 
+            
+            carrito.forEach(item => {
+                const inputId = document.createElement('input');
+                inputId.type = 'hidden';
+                inputId.name = 'productosIds';
+                inputId.value = item.id;
+                hiddenContainer.appendChild(inputId);
+                
+                const inputCant = document.createElement('input');
+                inputCant.type = 'hidden';
+                inputCant.name = 'cantidades';
+                inputCant.value = item.cantidad;
+                hiddenContainer.appendChild(inputCant);
+            });
+            
+            document.getElementById('form-venta').submit();
+        }
+            
+        function filtrarProductos() {
+            const textoBusqueda = document.getElementById('input-busqueda').value.toLowerCase();
+            const tarjetas = document.querySelectorAll('.products-grid .product-card');
+
+            tarjetas.forEach(tarjeta => {
+                const nombreProducto = tarjeta.querySelector('.product-title').innerText.toLowerCase();
+
+                if (nombreProducto.includes(textoBusqueda)) {
+                    tarjeta.style.display = ""; 
+                } else {
+                    tarjeta.style.display = "none"; 
+                }
+            });
+        }    
+    </script>
+    <script th:src="script.js"></script>
+</body>
+</html>

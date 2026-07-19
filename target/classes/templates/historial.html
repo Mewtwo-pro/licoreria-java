@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Registro de Ventas</title>
+
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/historial.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+
+    <main class="container">
+        
+        <section class="panel filters-panel">
+            <h2>Panel de Filtros Avanzados</h2>
+                
+ <form class="filters-grid" method="get" th:action="@{/historial}">
+    <div class="filter-group wide">
+        <input type="text" name="idVentaFiltro" th:value="${param.idVentaFiltro}" placeholder="Buscar por Número de Venta (ID)">
+    </div>
+    
+    <div class="filter-group">
+        <select name="idUsuario">
+            <option value="">Filtro por Usuario (Admin/Vendedor)</option>
+            <option th:each="u : ${usuarios}" th:value="${u.idUsuario}" th:text="${u.nombreCompleto}"
+                    th:selected="${param.idUsuario != null && param.idUsuario[0] == #strings.toString(u.idUsuario)}"></option>
+        </select>
+    </div>
+
+    <!-- FILTRO DE DÍAS (RANGO DE FECHAS) -->
+    <div class="filter-group date-range">
+        <label>Desde día:</label>
+        <input type="date" name="fechaInicio" th:value="${param.fechaInicio}">
+        <label>Hasta día:</label>
+        <input type="date" name="fechaFin" th:value="${param.fechaFin}">
+    </div>
+
+    <!-- FILTRO DE HORAS (RANGO DE HORAS) -->
+    <div class="filter-group time-range">
+        <label>Hora Inicio:</label>
+        <input type="time" name="horaInicio" th:value="${param.horaInicio}">
+        <label>Hora Fin:</label>
+        <input type="time" name="horaFin" th:value="${param.horaFin}">
+    </div>
+
+    <div class="filter-group btn-container">
+        <button type="submit" class="btn-primary btn-block">
+            <i class="fa-solid fa-filter"></i> FILTRAR RESULTADOS
+        </button>
+    </div>
+</form>
+        
+        </section>
+
+        <section class="panel history-panel">
+            <h2>Historial de Ventas</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Venta ID <i class="fa-solid fa-caret-down"></i></th>
+                            <th>Fecha y Hora <i class="fa-solid fa-sort"></i></th>
+                            <th>Usuario <i class="fa-solid fa-sort"></i></th>
+                            <th>Categoría/Items Principales <i class="fa-solid fa-sort"></i></th>
+                            <th>Total Pagado <i class="fa-solid fa-sort"></i></th>
+                            <th>Forma de Pago <i class="fa-solid fa-sort"></i></th>
+                        </tr>
+                    </thead>
+                
+<tbody>
+    <tr th:each="venta : ${ventas}" 
+        class="fila-venta" 
+        th:data-id="${venta.idVenta}" 
+        style="cursor: pointer;">
+        
+        <td th:text="${venta.idVenta}">1</td>
+        <td th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm')}">13/05/2026 15:30</td>
+        <td th:text="${venta.usuarioCajero.nombreCompleto}">Admin</td>
+        <td th:text="${venta.resumenItems}">Whisky Black Label</td>
+        <td th:text="'S/. ' + ${#numbers.formatDecimal(venta.total, 1, 2)}">S/. 171.10</td>
+        <td th:text="${venta.tipoPago}">Efectivo</td>
+    </tr>
+</tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="bottom-grid">
+            
+            <section class="panel detail-panel">
+                <h2>Detalle de Venta Seleccionada</h2>
+                <div class="detail-content">
+                    
+                    <div class="ticket" th:if="${ventaSeleccionada != null}">
+                        <div class="ticket-header">
+                            <h3>RECEPT DIGITAL</h3>
+                            <p th:text="'Vendedor: ' + ${ventaSeleccionada.usuarioCajero.nombreCompleto}">Admin</p>
+                            <p th:text="'VentaID: V' + ${ventaSeleccionada.idVenta}">VentiID: V00123</p>
+                        </div>
+<div class="ticket-body">
+    <div id="ticket-productos">
+        <!-- JS vaciará esto y meterá las filas dinámicas aquí -->
+    </div>
+    <hr>
+    <div class="ticket-line total">
+        <span>Total</span> 
+        <span id="ticket-total-text">S/. 0.00</span>
+    </div>
+</div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="btn-ver-comprobante" class="btn-primary">VER COMPROBANTE</button>
+                        <button id="btn-solicitar-devolucion" class="btn-primary">SOLICITAR DEVOLUCIÓN</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel summary-panel">
+                <div class="metric-row">
+                    <span class="metric-label">Total Ventas:</span>
+                    <!-- Cuenta cuántos registros devolvió la lista -->
+                    <span class="metric-value" th:text="${totalVentasCount}">185</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Total Ingresos:</span>
+                    <span class="metric-value highlight" th:text="'S/. ' + ${#numbers.formatDecimal(totalIngresosSum, 1, 2)}">S/. 12,350.50</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Filtro Activo:</span>
+                    <span class="metric-value" th:text="${filtroActivo != null ? filtroActivo : 'Ninguno'}">Mayo 2026</span>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script> 
+        document.addEventListener("DOMContentLoaded", () => {
+            const filas = document.querySelectorAll(".fila-venta");
+            const ticketProductos = document.getElementById("ticket-productos");
+            const ticketTotalText = document.getElementById("ticket-total-text");
+            const ticketVentaId = document.querySelector(".ticket-header p:nth-child(3)"); // Párrafo del ID
+            const ticketVendedor = document.querySelector(".ticket-header p:nth-child(2)"); // Párrafo del cajero
+
+            filas.forEach(fila => {
+                fila.addEventListener("click", () => {
+                    // 1. Cambiar la clase visual de la fila seleccionada
+                    filas.forEach(f => f.classList.remove("selected-row"));
+                    fila.classList.add("selected-row");
+
+                    // 2. Obtener el ID de la fila presionada
+                    const ventaId = fila.getAttribute("data-id");
+
+                    // 3. Consultar a la API interna de Spring Boot
+                    fetch(`/historial/api/detalle?id=${ventaId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.idVenta) {
+                                // Actualizar cabecera del ticket
+                                ticketVentaId.textContent = `VentaID: V${data.idVenta}`;
+                                ticketVendedor.textContent = `Vendedor: ${data.cajero}`;
+                                ticketTotalText.textContent = `S/. ${parseFloat(data.total).toFixed(2)}`;
+
+                                // Limpiar productos anteriores del ticket
+                                ticketProductos.innerHTML = "";
+
+                                // Insertar los nuevos productos vendidos
+                                data.detalles.forEach(item => {
+                                    const lineaHtml = `
+                                        <div class="ticket-line">
+                                            <span>${item.producto} (x${item.cantidad})</span> 
+                                            <span>S/. ${parseFloat(item.subtotal).toFixed(2)}</span>
+                                        </div>
+                                    `;
+                                    ticketProductos.insertAdjacentHTML("beforeend", lineaHtml);
+                                });
+                            }
+                        })
+                        .catch(error => console.error("Error al obtener detalles:", error));
+                });
+            });
+        
+            const btnVerComprobante = document.getElementById("btn-ver-comprobante");
+            btnVerComprobante.addEventListener("click", () => {
+            // Conseguimos la fila que actualmente tiene la clase seleccionada
+            const filaSeleccionada = document.querySelector(".fila-venta.selected-row");
+
+            if (filaSeleccionada) {
+            const ventaId = filaSeleccionada.getAttribute("data-id");
+
+            // Abrimos una nueva pestaña con una vista optimizada para imprimir el ticket
+            window.open(`/historial/comprobante/imprimir?id=${ventaId}`, '_blank');
+            } else {
+            alert("Por favor, selecciona una venta de la lista primero.");
+            }
+            });
+                
+            const btnDevolucion = document.getElementById("btn-solicitar-devolucion");
+            btnDevolucion.addEventListener("click", () => {
+                // Buscamos la fila seleccionada en la tabla
+                const filaSeleccionada = document.querySelector(".fila-venta.selected-row");
+                
+                if (!filaSeleccionada) {
+                    alert("Por favor, selecciona la venta que deseas devolver de la lista.");
+                    return;
+                }
+
+                const ventaId = filaSeleccionada.getAttribute("data-id");
+
+                // Pedimos confirmación al cajero/admin para evitar errores accidentales
+                if (confirm(`¿Estás seguro de que deseas anular la venta V${ventaId}? Se devolverán los productos al inventario.`)) {
+                    
+                    // Enviamos la petición POST al backend para procesar la devolución
+                    fetch(`/historial/api/devolucion?id=${ventaId}`, {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("¡Devolución procesada con éxito! El inventario ha sido actualizado.");
+                            // Recargamos la página para actualizar la tabla y las métricas de dinero
+                            window.location.reload();
+                        } else {
+                            alert("Hubo un error al procesar la devolución.");
+                        }
+                    })
+                    .catch(error => console.error("Error en la devolución:", error));
+                }
+            });
+                    
+        });
+
+    </script> 
+    <script th:src="script.js"></script>
+</body>
+</html>

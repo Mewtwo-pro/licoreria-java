@@ -1,0 +1,596 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario (Almacén)</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/inventario.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    </head>
+<body>
+
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+    <main class="main-container">
+        
+        <section class="inventory-section">
+            <div class="search-bar-container">
+                <input type="text" class="search-input" placeholder="🔍 Buscar Producto (Ctrl+S)">
+            </div>
+
+            <div class="categories-container">
+                <span>Categoría:</span>
+                <div th:each="cat : ${categorias}" style="display: inline-block;">
+                    <button th:text="${cat.nombreCategoria}" class="btn-category">
+                        Nombre Categoría
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Código SKU ▲</th>
+                            <th>Nombre del Producto</th>
+                            <th>Categoría</th>
+                            <th>Stock Actual ▼</th>
+                            <th>Ubicación Almacén</th>
+                            <th>Stock Crítico ▼</th>
+                            <th>Último Precio de Compra</th>
+                            <th>Último Proveedor</th>
+                        </tr>
+                    </thead>
+                        
+                    <tbody id="inventory-tbody">
+                        <tr th:each="prod : ${productos}" 
+                            th:data-id="${prod.idProducto}"
+                            th:data-sku="${prod.sku}"
+                            th:data-nombre="${prod.nombreProducto}"
+                            th:data-categoria="${prod.categoriaProducto != null ? prod.categoriaProducto.nombreCategoria : 'Sin Categoría'}"
+                            th:data-stock="${prod.stockActual}"
+                            th:data-precio-venta="${prod.precioVenta}"
+                            th:data-precio-compra="${prod.precioCompraProveedor}"
+                            th:data-proveedor="${prod.proveedorPrincipal != null ? prod.proveedorPrincipal.nombreProveedor : 'Sin Proveedor'}"
+                            th:data-imagen="${prod.imagenUrl}"
+                            class="product-row">
+
+                            <td th:text="${prod.idProducto}">1</td>
+                            <td th:text="${prod.sku}">WBL001</td>
+                            <td th:text="${prod.nombreProducto}">Whisky Black Label</td>
+                            <td th:text="${prod.categoriaProducto != null ? prod.categoriaProducto.nombreCategoria : '0'}">
+                                1
+                            </td>
+                            <td th:text="${prod.stockActual}">24 (Alerta)</td>
+                            <td th:text="${prod.ubicacionAlmacen}">Estante A3</td>
+                            <td th:text="${prod.stockCritico}">24 (Alerta)</td>
+                            <td th:text="${'S/. ' + prod.precioCompraProveedor}">S/. 95.00</td>
+                            <td th:text="${prod.proveedorPrincipal != null ? prod.proveedorPrincipal.nombreProveedor : 'Sin Proveeder'}">
+                                Distribuidora Licores S.A.</td>
+                        </tr> 
+                   </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside class="sidebar-section">
+            <div class="panel shadow-box">
+                <h3>Panel de Acciones</h3>
+                <div class="actions-grid">
+                    <button id="btn-editar-seleccionado" class="btn-action">EDITAR SELECCIONADO</button>
+                    <button id="btn-eliminar-seleccionado" class="btn-action">ELIMINAR SELECCIONADO</button>
+                    <button id="btn-ver-historial" class="btn-action">VER HISTORIAL DE MOVIMIENTOS</button>
+                    <button id="btn-reporte-stock" class="btn-action">GENERAR REPORTE BAJO STOCK</button>
+                </div>
+            </div>
+            <div class="panel shadow-box">
+                <h3>Detalle del Producto Seleccionado</h3>
+                <div class="product-detail-card">
+                    <div class="product-image-placeholder">
+                        <img id="detail-img" src="/images/puntoVenta/img_002.png" alt="Imagen del producto" style="max-width: 80px; max-height: 80px; object-fit: contain; display: none;">
+                        <span id="detail-emoji">🍾</span> 
+                    </div>
+                    <h4 id="detail-nombre">Selecciona un producto</h4>
+                    <div class="detail-info">
+                        <p><strong>SKU:</strong> <span id="detail-sku">-</span></p>
+                        <p><strong>Categoría:</strong> <span id="detail-categoria">-</span></p>
+                        <p><strong>Stock Actual:</strong> <span id="detail-stock">-</span></p>
+                        <p><strong>Precio Venta:</strong> <span id="detail-precio-venta">-</span></p>
+                        <p><strong>Último Precio Compra:</strong> <span id="detail-precio-compra">-</span></p>
+                        <p><strong>Último Proveedor:</strong> <span id="detail-proveedor">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <footer class="footer-status">
+        <div>Total Productos: <span class="green-text">185</span></div>
+        <div>Almacén Principal: <span class="green-text">95% Capacidad</span></div>
+        <div class="green-text">🔄 Sincronizado con Base de Datos</div>
+    </footer>
+<!-- Formulario Oculto para procesar la eliminación de forma segura -->
+<form id="form-eliminar-producto" th:action="@{/inventario/eliminar}" method="post" style="display: none;">
+    <input type="hidden" id="delete-id" name="idProducto">
+</form>
+<!-- MODAL FLOTANTE: HISTORIAL DE MOVIMIENTOS (KARDEX) -->
+<div id="modal-historial-movimientos" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(26, 19, 16, 0.8); overflow-y: auto;">
+    <div class="modal-content" style="background-color: #2b231f; color: #f5ebe6; margin: 5% auto; padding: 25px; width: 55%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); border: 1px solid #4a3b32; font-family: 'Segoe UI', sans-serif;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="color: #e6ccb2; margin: 0; font-size: 1.4rem;">
+                <i class="fa-solid fa-timeline"></i> Kardex: <span id="historial-producto-titulo" style="color: #ddb892;">-</span>
+            </h2>
+            <span id="close-modal-historial" style="font-size: 1.8rem; color: #b79477; cursor: pointer; line-height: 1;">&times;</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #4a3b32; margin-bottom: 20px;">
+        
+        <!-- Tabla del Historial -->
+        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #4a3b32; border-radius: 8px; background: #231c19;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead style="background-color: #3d312a; position: sticky; top: 0; z-index: 10;">
+                    <tr style="border-bottom: 2px solid #4a3b32;">
+                        <th style="padding: 12px; color: #ddb892;">Fecha</th>
+                        <th style="padding: 12px; color: #ddb892;">Tipo Movimiento</th>
+                        <th style="padding: 12px; color: #ddb892;">Cantidad</th>
+                        <th style="padding: 12px; color: #ddb892;">Precio Unit.</th>
+                        <th style="padding: 12px; color: #ddb892;">Detalle / Referencia</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-movimientos-cuerpo">
+                    <!-- Filas cargadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: right; margin-top: 20px; border-top: 1px solid #4a3b32; padding-top: 15px;">
+            <button type="button" id="btn-cerrar-historial-abajo" style="padding: 8px 20px; border-radius: 6px; background: transparent; color: #ddb892; border: 1px solid #5c4d42; cursor: pointer; font-weight: bold;">Cerrar Ventana</button>
+        </div>
+    </div>
+</div>
+<!-- MODAL FLOTANTE EDITAR PRODUCTO (ESTILO CAPUCHINO NIGHT) -->
+<div id="modal-editar-producto" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(26, 19, 16, 0.8); overflow-y: auto;">
+    <div class="modal-content" style="background-color: #2b231f; color: #f5ebe6; margin: 8% auto; padding: 25px; width: 40%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); border: 1px solid #4a3b32; font-family: 'Segoe UI', sans-serif;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="color: #e6ccb2; margin: 0; font-size: 1.5rem;"><i class="fa-solid fa-pen-to-square"></i> Editar Producto</h2>
+            <span id="close-modal-editar" style="font-size: 1.8rem; color: #b79477; cursor: pointer; line-height: 1;">&times;</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #4a3b32; margin-bottom: 20px;">
+
+        <form th:action="@{/inventario/editar}" method="post">
+            <!-- Campos Ocultos Obligatorios -->
+            <input type="hidden" id="edit-id" name="idProducto">
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Producto:</strong></label>
+                <input type="text" id="edit-nombre-display" readonly style="width: 100%; padding: 8px; background: #3a2f28; color: #b79477; border: 1px solid #4a3b32; border-radius: 6px; box-sizing: border-box; cursor: not-allowed;">
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Código SKU:</strong></label>
+                <input type="text" id="edit-sku" name="sku" required style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 14px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Precio Venta (S/.):</strong></label>
+                    <input type="number" step="0.01" id="edit-precio-venta" name="precioVenta" required style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Stock Crítico:</strong></label>
+                    <input type="number" id="edit-stock-critico" name="stockCritico" required style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>Ubicación en Almacén:</strong></label>
+                <input type="text" id="edit-ubicacion" name="ubicacionAlmacen" required style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><strong>URL de la Imagen:</strong></label>
+                <input type="text" id="edit-imagen" name="imagenUrl" style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+
+            <div style="text-align: right; border-top: 1px solid #4a3b32; padding-top: 15px;">
+                <button type="button" id="btn-cancelar-editar" style="padding: 8px 15px; margin-right: 10px; border-radius: 6px; background: transparent; color: #ddb892; border: 1px solid #5c4d42; cursor: pointer; font-weight: bold;">Cancelar</button>
+                <button type="submit" style="padding: 8px 20px; background-color: #ddb892; color: #2b231f; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- AREA DE REPORTE PARA IMPRESIÓN / PDF (ESTILO CAPUCHINO NIGHT) -->
+<div id="seccion-reporte-impresion" style="display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background-color: #2b231f; color: #f5ebe6; padding: 40px; box-sizing: border-box; overflow-y: auto; font-family: 'Segoe UI', sans-serif;">
+    
+    <!-- Botones de Acción Flotantes (No se imprimen) -->
+    <div class="no-print" style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; background: #231c19; padding: 15px; border-radius: 8px; border: 1px solid #4a3b32;">
+        <span style="color: #e6ccb2; font-weight: bold;">📋 Vista Previa del Reporte de Almacén</span>
+        <div>
+            <button onclick="window.print();" style="padding: 10px 20px; background: #72ef9d; color: #1a1310; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-right: 10px;"><i class="fa-solid fa-print"></i> IMPRIMIR / GUARDAR PDF</button>
+            <button onclick="document.getElementById('seccion-reporte-impresion').style.display='none';" style="padding: 10px 20px; background: transparent; color: #ddb892; border: 1px solid #5c4d42; border-radius: 6px; font-weight: bold; cursor: pointer;">VOLVER AL INVENTARIO</button>
+        </div>
+    </div>
+
+    <!-- Encabezado Oficial del Reporte -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #e6ccb2; margin: 0 0 5px 0; font-size: 2rem; letter-spacing: 1px;">LICORERÍA & TABERNA D'CORLEONE</h1>
+        <p style="color: #b79477; margin: 0 0 15px 0; font-weight: 500;">Reporte de Productos con Stock Crítico e Insuficiente</p>
+        <div style="display: flex; justify-content: space-between; color: #ddb892; font-size: 0.9rem; border-bottom: 2px solid #4a3b32; padding-bottom: 10px;">
+            <span><strong>Fecha de Emisión:</strong> <span id="reporte-fecha">-</span></span>
+            <span><strong>Estado Almacén:</strong> <span style="color: #ff6b6b; font-weight: bold;">⚠️ REAPROVISIONAMIENTO REQUERIDO</span></span>
+        </div>
+    </div>
+
+    <!-- Tabla de Contenido del Reporte -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; color: #f5ebe6;">
+        <thead>
+            <tr style="background-color: #3d312a; border-bottom: 2px solid #4a3b32;">
+                <th style="padding: 12px; text-align: left; color: #ddb892;">SKU</th>
+                <th style="padding: 12px; text-align: left; color: #ddb892;">Descripción del Producto</th>
+                <th style="padding: 12px; text-align: left; color: #ddb892;">Ubicación</th>
+                <th style="padding: 12px; text-align: center; color: #ddb892;">Stock Actual</th>
+                <th style="padding: 12px; text-align: center; color: #ddb892;">Stock Mínimo</th>
+                <th style="padding: 12px; text-align: left; color: #ddb892;">Proveedor Principal</th>
+            </tr>
+        </thead>
+        <tbody id="reporte-tabla-cuerpo">
+            <!-- Se llena dinámicamente -->
+        </tbody>
+    </table>
+
+    <!-- Estilos CSS especiales para la hora de Imprimir (Oculta todo lo demás) -->
+    <style>
+        @media print {
+            body * { display: none !important; } /* Oculta todo el sistema completo */
+            #seccion-reporte-impresion, #seccion-reporte-impresion * { display: block !important; } /* Muestra solo este contenedor */
+            .no-print { display: none !important; } /* Oculta los botones de imprimir dentro de la hoja */
+            #seccion-reporte-impresion { position: absolute; left: 0; top: 0; width: 100%; padding: 0; background: white !important; color: black !important; }
+            #seccion-reporte-impresion h1, #seccion-reporte-impresion p, #seccion-reporte-impresion span, #seccion-reporte-impresion th { color: black !important; }
+            #seccion-reporte-impresion tr { border-bottom: 1px solid #000 !important; }
+            #seccion-reporte-impresion thead tr { background-color: #eee !important; }
+        }
+    </style>
+</div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.querySelector(".search-input");
+        const categoryButtons = document.querySelectorAll(".btn-category");
+        const tableRows = document.querySelectorAll("#inventory-tbody tr");
+
+        let activeCategory = null; // Guarda el nombre de la categoría seleccionada actualmente
+
+        // --- FUNCIÓN DE FILTRADO PRINCIPAL ---
+        function filterTable() {
+            const searchText = searchInput.value.toLowerCase().trim();
+
+            tableRows.forEach(row => {
+                // Obtenemos el texto de las celdas clave
+                const nameText = row.cells[2].textContent.toLowerCase(); // Nombre de Producto
+                const skuText = row.cells[1].textContent.toLowerCase();   // SKU
+                const categoryText = row.cells[3].textContent.trim();     // Categoría (Celda 4)
+
+                // Comprobamos si coincide con la categoría seleccionada
+                const matchesCategory = !activeCategory || categoryText === activeCategory;
+
+                // Comprobamos si coincide con el texto buscado (en nombre o SKU)
+                const matchesSearch = nameText.includes(searchText) || skuText.includes(searchText);
+
+                // Si cumple ambas condiciones, se muestra; si no, se oculta
+                if (matchesCategory && matchesSearch) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        // --- EVENTO DE BUSCADOR (Escribir en tiempo real) ---
+        searchInput.addEventListener("input", filterTable);
+
+        // --- EVENTO DE BOTONES DE CATEGORÍA ---
+        categoryButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                const clickedCategory = button.textContent.trim();
+
+                if (activeCategory === clickedCategory) {
+                    // Si ya estaba activa la misma categoría, la quitamos (reseteamos)
+                    activeCategory = null;
+                    button.classList.remove("active"); // Clase CSS por si quieres darle un estilo visual activo
+                } else {
+                    // Si es una nueva categoría, quitamos el estado activo a los demás botones y se lo damos a este
+                    categoryButtons.forEach(btn => btn.classList.remove("active"));
+                    activeCategory = clickedCategory;
+                    button.classList.add("active");
+                }
+
+                // Ejecutamos el filtro general
+                filterTable();
+            });
+        });
+
+// --- SELECCIÓN Y DETALLE DEL PRODUCTO EN EL PANEL LATERAL ---
+const productRows = document.querySelectorAll(".product-row");
+
+// Elementos del panel de detalle
+const detailImg = document.getElementById("detail-img");
+const detailEmoji = document.getElementById("detail-emoji");
+const detailNombre = document.getElementById("detail-nombre");
+const detailSku = document.getElementById("detail-sku");
+const detailCategoria = document.getElementById("detail-categoria");
+const detailStock = document.getElementById("detail-stock");
+const detailPrecioVenta = document.getElementById("detail-precio-venta");
+const detailPrecioCompra = document.getElementById("detail-precio-compra");
+const detailProveedor = document.getElementById("detail-proveedor");
+
+productRows.forEach(row => {
+    row.addEventListener("click", () => {
+        // 1. Quitamos la clase 'selected-row' de cualquier otra fila antes de marcar esta
+        productRows.forEach(r => r.classList.remove("selected-row"));
+        row.classList.add("selected-row");
+
+        // 2. Extraemos los datos del producto guardados en los atributos data-*
+        const id = row.getAttribute("data-id");
+        const sku = row.getAttribute("data-sku");
+        const nombre = row.getAttribute("data-nombre");
+        const categoria = row.getAttribute("data-categoria");
+        const stock = row.getAttribute("data-stock");
+        const precioVenta = parseFloat(row.getAttribute("data-precio-venta")).toFixed(2);
+        const precioCompra = row.getAttribute("data-precio-compra") ? parseFloat(row.getAttribute("data-precio-compra")).toFixed(2) : '0.00';
+        const proveedor = row.getAttribute("data-proveedor");
+        const imagenUrl = row.getAttribute("data-imagen");
+
+        // 3. Inyectamos los datos en el panel de detalle lateral
+        detailNombre.textContent = nombre;
+        detailSku.textContent = sku;
+        detailCategoria.textContent = categoria;
+        detailStock.textContent = stock;
+        detailPrecioVenta.textContent = `S/. ${precioVenta}`;
+        detailPrecioCompra.textContent = `S/. ${precioCompra}`;
+        detailProveedor.textContent = proveedor;
+
+        // 4. Manejamos la visualización de la imagen
+        if (imagenUrl && imagenUrl.trim() !== "" && imagenUrl !== "null") {
+            detailImg.src = imagenUrl;
+            detailImg.style.display = "block";
+            detailEmoji.style.display = "none";
+        } else {
+            detailImg.style.display = "none";
+            detailEmoji.style.display = "block";
+        }
+    });
+});
+
+        // --- ATAJO DE TECLADO (Ctrl + S para enfocar el input de búsqueda) ---
+        document.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault(); // Evita que el navegador intente "guardar página"
+                searchInput.focus();
+            }
+        });
+            
+    // ========================================================
+    // LÓGICA DEL MODAL DE EDICIÓN DE PRODUCTOS
+    // ========================================================
+    const btnEditarSeleccionado = document.getElementById("btn-editar-seleccionado");
+    const modalEditar = document.getElementById("modal-editar-producto");
+    const btnCerrarIcono = document.getElementById("close-modal-editar");
+    const btnCancelarEditar = document.getElementById("btn-cancelar-editar");
+
+    // Inputs del formulario modal
+    const editId = document.getElementById("edit-id");
+    const editNombreDisplay = document.getElementById("edit-nombre-display");
+const editSku = document.getElementById("edit-sku"); // <-- AGREGADO: Capturar el elemento del DOM
+    const editPrecioVenta = document.getElementById("edit-precio-venta");
+    const editStockCritico = document.getElementById("edit-stock-critico");
+    const editUbicacion = document.getElementById("edit-ubicacion");
+    const editImagen = document.getElementById("edit-imagen");
+
+    if (btnEditarSeleccionado) {
+        btnEditarSeleccionado.addEventListener("click", () => {
+            // Buscamos la fila que tenga la clase 'selected-row' agregada por tu script previo
+            const filaSeleccionada = document.querySelector(".product-row.selected-row");
+
+            if (!filaSeleccionada) {
+                alert("Por favor, seleccione un producto de la tabla antes de editar.");
+                return;
+            }
+
+            // Extraemos los datos dinámicos usando los atributos th:data-* de la fila
+            const id = filaSeleccionada.getAttribute("data-id");
+            const nombre = filaSeleccionada.getAttribute("data-nombre");
+            const sku = filaSeleccionada.getAttribute("data-sku"); // <-- AGREGADO: Extraer el SKU de los atributos de la fila
+            const precioVenta = filaSeleccionada.getAttribute("data-precio-venta");
+            const imagenUrl = filaSeleccionada.getAttribute("data-imagen");
+            
+            // Nota: Para capturar valores que no están explícitamente como data-* (como stock crítico y ubicación)
+            // podemos obtenerlos directamente de los nodos hijos de la fila (celdas del <td>)
+            // celda 5 (índice 5) = Ubicación Almacén, celda 6 (índice 6) = Stock Crítico
+            const ubicacion = filaSeleccionada.cells[5].textContent.trim();
+            const stockCritico = filaSeleccionada.cells[6].textContent.trim();
+
+            // Seteamos los valores recuperados en los inputs correspondientes del modal
+            editId.value = id;
+            editNombreDisplay.value = nombre ? nombre : "Sin Nombre";
+            editSku.value = sku ? sku : ""; // <-- AGREGADO: Inyectar el valor en el input del modal
+            editPrecioVenta.value = precioVenta ? parseFloat(precioVenta).toFixed(2) : "0.00";
+            editStockCritico.value = parseInt(stockCritico, 10) || 0;
+            editUbicacion.value = ubicacion;
+            editImagen.value = (imagenUrl && imagenUrl !== "null") ? imagenUrl : "";
+
+            // Mostramos el modal flotante en pantalla
+            if (modalEditar) modalEditar.style.display = "block";
+        });
+    }
+
+    // Funciones de cierre del modal
+    if (btnCerrarIcono) btnCerrarIcono.addEventListener("click", () => modalEditar.style.display = "none");
+    if (btnCancelarEditar) btnCancelarEditar.addEventListener("click", () => modalEditar.style.display = "none");               
+
+    // ========================================================
+    // LÓGICA DE ELIMINACIÓN DE PRODUCTOS
+    // ========================================================
+    const btnEliminarSeleccionado = document.getElementById("btn-eliminar-seleccionado");
+    const formEliminar = document.getElementById("form-eliminar-producto");
+    const deleteIdInput = document.getElementById("delete-id");
+
+    if (btnEliminarSeleccionado) {
+        btnEliminarSeleccionado.addEventListener("click", () => {
+            // Buscamos la fila activa marcada con la clase 'selected-row'
+            const filaSeleccionada = document.querySelector(".product-row.selected-row");
+
+            if (!filaSeleccionada) {
+                alert("Por favor, seleccione un producto de la tabla antes de eliminar.");
+                return;
+            }
+
+            // Recuperamos el ID y el nombre del producto para la confirmación
+            const id = filaSeleccionada.getAttribute("data-id");
+            const nombre = filaSeleccionada.getAttribute("data-nombre");
+
+            // Cuadro de confirmación nativo del navegador
+            const confirmar = confirm(`¿Está completamente seguro de que desea eliminar el producto "${nombre}"?\nEsta acción no se puede deshacer.`);
+            
+            if (confirmar) {
+                // Inyectamos el ID en el input oculto y ejecutamos el submit del formulario
+                deleteIdInput.value = id;
+                formEliminar.submit();
+            }
+        });
+    }   
+    // ========================================================
+    // LÓGICA DEL MODAL HISTORIAL DE MOVIMIENTOS
+    // ========================================================
+    const btnVerHistorial = document.getElementById("btn-ver-historial");
+    const modalHistorial = document.getElementById("modal-historial-movimientos");
+    const closeHistorialX = document.getElementById("close-modal-historial");
+    const btnCerrarHistorialAbajo = document.getElementById("btn-cerrar-historial-abajo");
+    const tablaMovCuerpo = document.getElementById("tabla-movimientos-cuerpo");
+    const historialProductoTitulo = document.getElementById("historial-producto-titulo");
+
+    if (btnVerHistorial) {
+        btnVerHistorial.addEventListener("click", () => {
+            const filaSeleccionada = document.querySelector(".product-row.selected-row");
+
+            if (!filaSeleccionada) {
+                alert("Por favor, seleccione un producto de la tabla para auditar su historial.");
+                return;
+            }
+
+            const idProducto = filaSeleccionada.getAttribute("data-id");
+            const nombreProducto = filaSeleccionada.getAttribute("data-nombre");
+
+            // Colocamos el nombre en el encabezado
+            historialProductoTitulo.textContent = nombreProducto;
+            
+            // Mensaje de carga transitorio
+            tablaMovCuerpo.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#b79477;">Buscando transacciones en la base de datos...</td></tr>';
+            modalHistorial.style.display = "block";
+
+            // Consumimos el API de Spring Boot de manera asíncrona
+            fetch(`/inventario/api/movimientos?idProducto=${idProducto}`)
+                .then(response => response.json())
+                .then(movimientos => {
+                    tablaMovCuerpo.innerHTML = ""; // Limpiamos
+
+                    if (movimientos.length === 0) {
+                        tablaMovCuerpo.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#ff6b6b;">Este producto es nuevo. No registra compras ni ventas todavía.</td></tr>';
+                        return;
+                    }
+
+                    // Ordenamos por fecha (más reciente primero) antes de renderizar
+                    movimientos.sort((a, b) => b.timestamp - a.timestamp);
+
+                    movimientos.forEach(m => {
+                        const fila = document.createElement("tr");
+                        fila.style.borderBottom = "1px solid #3d312a";
+                        
+                        // Estilos basados en si es Entrada (Verde) o Salida (Rojo)
+                        const esEntrada = m.tipo === 'ENTRADA (COMPRA)';
+                        const badgeColor = esEntrada ? '#72ef9d' : '#ff6b6b';
+                        const badgeBg = esEntrada ? 'rgba(114,239,157,0.1)' : 'rgba(255,107,107,0.1)';
+                        const signo = esEntrada ? '+' : '-';
+
+                        fila.innerHTML = `
+                            <td style="padding:12px;">${m.fecha}</td>
+                            <td style="padding:12px;"><span style="color:${badgeColor}; background:${badgeBg}; padding:4px 8px; border-radius:4px; font-size:0.85rem; font-weight:bold;">${m.tipo}</span></td>
+                            <td style="padding:12px; font-weight:bold; color:${badgeColor};">${signo} ${m.cantidad} u.</td>
+                            <td style="padding:12px;">S/. ${parseFloat(m.precioUnitario).toFixed(2)}</td>
+                            <td style="padding:12px; color:#e6ccb2;">${m.detalle}</td>
+                        `;
+                        tablaMovCuerpo.appendChild(fila);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    tablaMovCuerpo.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:#ff6b6b;">Error al conectar con el servidor.</td></tr>';
+                });
+        });
+    }
+
+    // Eventos para cerrar la interfaz flotante
+    if (closeHistorialX) closeHistorialX.addEventListener("click", () => modalHistorial.style.display = "none");
+    if (btnCerrarHistorialAbajo) btnCerrarHistorialAbajo.addEventListener("click", () => modalHistorial.style.display = "none");
+    
+    // ========================================================
+    // LÓGICA DE GENERACIÓN DE REPORTE BAJO STOCK (PDF/IMPRESIÓN)
+    // ========================================================
+    const btnReporteStock = document.getElementById("btn-reporte-stock");
+    const seccionReporte = document.getElementById("seccion-reporte-impresion");
+    const reporteTablaCuerpo = document.getElementById("reporte-tabla-cuerpo");
+    const reporteFecha = document.getElementById("reporte-fecha");
+
+    if (btnReporteStock) {
+        btnReporteStock.addEventListener("click", () => {
+            // Colocamos la fecha y hora actual en el encabezado
+            const ahora = new Date();
+            reporteFecha.textContent = ahora.toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
+
+            // Limpiamos la tabla del reporte anterior
+            reporteTablaCuerpo.innerHTML = "";
+
+            // Consumimos el endpoint de Spring Boot de manera asíncrona
+            fetch('/inventario/api/bajo-stock')
+                .then(response => response.json())
+                .then(productosBajos => {
+                    if (productosBajos.length === 0) {
+                        alert("🎉 ¡Excelente! No se encontraron productos por debajo del stock crítico.");
+                        return;
+                    }
+
+                    // Iteramos los productos críticos devueltos por el servidor
+                    productosBajos.forEach(p => {
+                        const fila = document.createElement("tr");
+                        fila.style.borderBottom = "1px solid #4a3b32";
+                        
+                        const proveedor = p.proveedorPrincipal ? p.proveedorPrincipal.nombreProveedor : "Sin proveedor asignado";
+
+                        fila.innerHTML = `
+                            <td style="padding: 12px; font-weight: bold; color: #ddb892;">${p.sku}</td>
+                            <td style="padding: 12px;">${p.nombreProducto}</td>
+                            <td style="padding: 12px; color: #b79477;">${p.ubicacionAlmacen}</td>
+                            <td style="padding: 12px; text-align: center; color: #ff6b6b; font-weight: bold;">${p.stockActual} u.</td>
+                            <td style="padding: 12px; text-align: center;">${p.stockCritico} u.</td>
+                            <td style="padding: 12px; color: #e6ccb2;">${proveedor}</td>
+                        `;
+                        reporteTablaCuerpo.appendChild(fila);
+                    });
+
+                    // Desplegamos la pantalla del reporte
+                    seccionReporte.style.display = "block";
+                })
+                .catch(error => {
+                    console.error("Error al generar reporte:", error);
+                    alert("Ocurrió un error al obtener la lista de stock del servidor.");
+                });
+        });
+    }
+    
+    });
+    </script>
+
+    <script th:src="script.js"></script>
+</body>
+</html>
