@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Gestión de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/usuarios.css(v=1.1)}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <!-- Encabezado dinámico intacto -->
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+    
+    <main class="dashboard-grid">
+        
+        <!-- PANEL REGISTRO -->
+        <section class="card panel-registro">
+            <h3>REGISTRO DE EMPLEADOS (NUEVO USUARIO)</h3>
+            
+            <form th:action="@{/usuarios/registrar}" method="POST" class="form-registro">
+                <div class="input-container">
+                    <label><i class="fa-solid fa-user-tie"></i> NOMBRE COMPLETO</label>
+                    <input type="text" name="nombre" placeholder="Ingresar nombre..." required>
+                </div>
+                
+                <div class="input-container">
+                    <label><i class="fa-solid fa-user-tie"></i> USERNAME</label>
+                    <input type="text" name="username" placeholder="Ingresar nombre usuario..." required>
+                </div>
+
+                <div class="input-container">
+                    <label><i class="fa-solid fa-lock"></i> NUEVA CONTRASEÑA</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="contraseña" placeholder="**********" required>
+                        <i class="fa-solid fa-eye toggle-password"></i>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <label><i class="fa-solid fa-list-check"></i> ASIGNACIÓN DE ROL</label>
+                    <select name="rol" required>
+                        <option value="" disabled selected>Seleccionar rol...</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Cajero</option>
+                        <option value="4">Repartidor</option>
+                        <option value="5">Almacenero</option>
+                    </select>
+                </div>
+
+                <div class="input-container">
+                    <label><i class="fa-solid fa-clock"></i> ASIGNAR TURNO (Opcional)</label>
+                    <select name="turno">
+                        <option value="Mañana">Turno Mañana</option>
+                        <option value="Tarde">Turno Tarde</option>
+                        <option value="Noche">Turno Noche</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-success btn-block">CREAR NUEVO USUARIO</button>
+            </form>
+        </section>
+
+        <!-- PANEL TABLA -->
+        <section class="card panel-tabla">
+            <h3>TABLA DE EMPLEADOS REGISTRADOS</h3>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FOTO/ID</th>
+                            <th>NOMBRE COMPLETO</th>
+                            <th>ROL</th>
+                            <th>TURNO / HORARIO</th>
+                            <th>ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+<tr th:each="user : ${usuarios}" 
+    th:data-id="${user.idUsuario}"
+    th:data-nombre="${user.nombreCompleto}"
+    th:data-username="${user.username}"
+    th:data-rol="${user.idRol}"
+    th:data-turno="${user.turno}"
+    th:data-activo="${user.activo}"
+    class="user-row"
+    style="cursor: pointer;">
+    
+    <td data-label="ID" th:text="'U000' + ${user.idUsuario}">U00123</td>
+    <td data-label="Nombre" th:text="${user.nombreCompleto}">Nombre Empleado</td>
+    <td data-label="Rol">
+        <span th:if="${user.idRol == 1}">Admin</span>
+        <span th:if="${user.idRol == 2}">Cajero</span>
+        <span th:if="${user.idRol == 3}">Mesero</span>
+        <span th:if="${user.idRol == 4}">Repartidor</span>
+        <span th:if="${user.idRol == 5}">Almacenero</span>
+        <span th:if="${user.idRol == 6}">Supervisor</span>
+    </td>
+    <td data-label="Turno" th:text="${user.turno}">Mañana</td>
+    <td data-label="Estado">
+        <span th:class="${user.activo} ? 'status-badge status-active' : 'status-badge status-inactive'"
+              th:text="${user.activo} ? 'Activo' : 'Inactivo'">
+            Activo
+        </span>
+    </td>
+</tr>
+                                
+                    </tbody>
+                </table>
+            </div>
+<div class="table-actions">
+    <!-- AGREGADO id="btn-exportar-usuarios" -->
+    <button id="btn-exportar-usuarios" class="btn-outline"><i class="fa-solid fa-file-export"></i> EXPORTAR INFORME</button>
+    <button id="btn-actualizar-modal" class="btn-success"><i class="fa-solid fa-pen-to-square"></i> ACTUALIZAR</button>
+    <button id="btn-eliminar-usuario" class="btn-danger"><i class="fa-solid fa-trash"></i> DESHABILITAR</button>
+</div>
+                    
+        </section>
+
+<!-- PANEL RESUMEN OPTIMIZADO PARA ADMINISTRACIÓN -->
+<section class="card panel-resumen">
+    <h3>Resumen Financiero y Control de Caja</h3>
+    <div class="resumen-widgets" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        
+        <!-- Widget 1: Caja Chica Diaria -->
+        <div class="widget" style="background: #3d312a; padding: 15px; border-radius: 8px; border-left: 4px solid #72ef9d;">
+            <span style="font-size: 0.85rem; color: #ddb892; display: block; margin-bottom: 5px;">Efectivo en Caja (Hoy)</span>
+            <h2 style="margin: 0; color: #72ef9d; font-size: 1.5rem;" th:text="'S/. ' + ${#numbers.formatDecimal(efectivoDiario, 1, 'COMMA', 2, 'POINT')}">S/. 0.00</h2>
+        </div>
+        
+        <!-- Widget 2: Acumulado Mensual -->
+        <div class="widget" style="background: #3d312a; padding: 15px; border-radius: 8px; border-left: 4px solid #e6ccb2;">
+            <span style="font-size: 0.85rem; color: #ddb892; display: block; margin-bottom: 5px;">Total Ingresos del Mes</span>
+            <h2 style="margin: 0; color: #e6ccb2; font-size: 1.5rem;" th:text="'S/. ' + ${#numbers.formatDecimal(ingresosMes, 1, 'COMMA', 2, 'POINT')}">S/. 0.00</h2>
+        </div>
+
+        <!-- Widget 3: Filtro Temporal Activo -->
+        <div class="widget filtro-activo" style="background: #231c19; padding: 15px; border-radius: 8px; text-align: center;">
+            <span style="font-size: 0.85rem; color: #b79477; display: block;">Filtro Periodo</span>
+            <h3 style="margin: 5px 0 0 0; color: #f5ebe6; font-size: 1.2rem;">Julio 2026</h3>
+        </div>
+        
+    </div>
+</section>
+    
+        
+    </main>
+
+    <footer class="main-footer">
+        <div>Usuario: <strong th:text="${session.userRol}">Admin</strong></div>
+        <button class="btn-footer">Cerrar Gestión Usuarios</button>
+        <div>Fecha: <strong>12 Jul 2026</strong></div>
+    </footer>
+<!-- MODAL FLOTANTE ACTUALIZAR USUARIO (ESTILO CAPUCHINO NIGHT) -->
+<div id="modal-editar-usuario" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(26, 19, 16, 0.8); overflow-y: auto;">
+    <div class="modal-content" style="background-color: #2b231f; color: #f5ebe6; margin: 6% auto; padding: 25px; width: 35%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); border: 1px solid #4a3b32; font-family: 'Segoe UI', sans-serif;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="color: #e6ccb2; margin: 0; font-size: 1.4rem;"><i class="fa-solid fa-user-gear"></i> Actualizar Empleado</h2>
+            <span id="close-modal-editar" style="font-size: 1.8rem; color: #b79477; cursor: pointer; line-height: 1;">&times;</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #4a3b32; margin-bottom: 20px;">
+
+        <form th:action="@{/usuarios/actualizar}" method="POST">
+            <!-- Llave primaria oculta -->
+            <input type="hidden" id="edit-id" name="idUsuario">
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><i class="fa-solid fa-user-tie"></i> NOMBRE COMPLETO</label>
+                <input type="text" id="edit-nombre" name="nombre" required style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><i class="fa-solid fa-user-tie"></i> USERNAME</label>
+                <input type="text" id="edit-username" name="username" required style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><i class="fa-solid fa-list-check"></i> ASIGNACIÓN DE ROL</label>
+                <select id="edit-rol" name="rol" required style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                    <option value="1">Admin</option>
+                    <option value="2">Cajero</option>
+                    <option value="4">Repartidor</option>
+                    <option value="5">Almacenero</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><i class="fa-solid fa-clock"></i> ASIGNAR TURNO</label>
+                <select id="edit-turno" name="turno" style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                    <option value="Mañana">Turno Mañana</option>
+                    <option value="Tarde">Turno Tarde</option>
+                    <option value="Noche">Turno Noche</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; color: #ddb892;"><i class="fa-solid fa-toggle-on"></i> ESTADO DEL EMPLEADO</label>
+                <select id="edit-activo" name="activo" style="width: 100%; padding: 8px; background: #231c19; color: #f5ebe6; border: 1px solid #5c4d42; border-radius: 6px; box-sizing: border-box;">
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                </select>
+            </div>
+
+            <div style="text-align: right; border-top: 1px solid #4a3b32; padding-top: 15px;">
+                <button type="button" id="btn-cancelar-editar" style="padding: 8px 15px; margin-right: 10px; border-radius: 6px; background: transparent; color: #ddb892; border: 1px solid #5c4d42; cursor: pointer; font-weight: bold;">Cancelar</button>
+                <button type="submit" style="padding: 8px 20px; background-color: #ddb892; color: #2b231f; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Formulario Oculto para procesar la eliminación de usuario de forma segura -->
+<form id="form-eliminar-usuario" th:action="@{/usuarios/eliminar}" method="POST" style="display: none;">
+    <input type="hidden" id="delete-user-id" name="idUsuario">
+</form>
+<!-- AREA DE REPORTE DE USUARIOS PARA IMPRESIÓN / PDF (ESTILO CAPUCHINO NIGHT) -->
+<div id="seccion-pdf-usuarios" style="display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background-color: #2b231f; color: #f5ebe6; padding: 40px; box-sizing: border-box; overflow-y: auto; font-family: 'Segoe UI', sans-serif;">
+    
+    <!-- Botones de Acción Flotantes (No se imprimen) -->
+    <div class="no-print" style="margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; background: #231c19; padding: 15px; border-radius: 8px; border: 1px solid #4a3b32;">
+        <span style="color: #e6ccb2; font-weight: bold;">📋 Vista Previa del Padrón de Empleados</span>
+        <div>
+            <button onclick="window.print();" style="padding: 10px 20px; background: #72ef9d; color: #1a1310; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-right: 10px;"><i class="fa-solid fa-print"></i> GUARDAR COMO PDF / IMPRIMIR</button>
+            <button onclick="document.getElementById('seccion-pdf-usuarios').style.display='none';" style="padding: 10px 20px; background: transparent; color: #ddb892; border: 1px solid #5c4d42; border-radius: 6px; font-weight: bold; cursor: pointer;">VOLVER A GESTIÓN</button>
+        </div>
+    </div>
+
+    <!-- Encabezado del Reporte -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #e6ccb2; margin: 0 0 5px 0; font-size: 1.8rem; letter-spacing: 1px;">LICORERÍA & TABERNA D'CORLEONE</h1>
+        <p style="color: #b79477; margin: 0 0 15px 0; font-weight: 500;">Reporte Oficial de Usuarios y Roles del Sistema</p>
+        <div style="display: flex; justify-content: space-between; color: #ddb892; font-size: 0.9rem; border-bottom: 2px solid #4a3b32; padding-bottom: 10px;">
+            <span><strong>Fecha de Extracción:</strong> <span id="pdf-fecha">-</span></span>
+            <span><strong>Tipo de Documento:</strong> <span>INFORME DE AUDITORÍA INTERNA</span></span>
+        </div>
+    </div>
+
+    <!-- Tabla del Contenido que irá al PDF -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; color: #f5ebe6;">
+        <thead>
+            <tr style="background-color: #3d312a; border-bottom: 2px solid #4a3b32;">
+                <th style="padding: 12px; text-align: left; color: #ddb892;">Código ID</th>
+                <th style="padding: 12px; text-align: left; color: #ddb892;">Nombre Completo del Empleado</th>
+                <th style="padding: 12px; text-align: left; color: #ddb892;">Nombre de Usuario</th>
+                <th style="padding: 12px; text-align: left; color: #ddb892;">Rol Asignado</th>
+                <th style="padding: 12px; text-align: left; color: #ddb892;">Turno / Horario</th>
+                <th style="padding: 12px; text-align: center; color: #ddb892;">Estado</th>
+            </tr>
+        </thead>
+        <tbody id="pdf-tabla-cuerpo">
+            <!-- Se llena dinámicamente con JS -->
+        </tbody>
+    </table>
+
+    <!-- Reglas CSS de impresión para limpiar el fondo oscuro -->
+    <style>
+        @media print {
+            body * { display: none !important; }
+            #seccion-pdf-usuarios, #seccion-pdf-usuarios * { display: block !important; }
+            .no-print { display: none !important; }
+            #seccion-pdf-usuarios { position: absolute; left: 0; top: 0; width: 100%; padding: 0; background: white !important; color: black !important; }
+            #seccion-pdf-usuarios h1, #seccion-pdf-usuarios p, #seccion-pdf-usuarios span, #seccion-pdf-usuarios th { color: black !important; }
+            #seccion-pdf-usuarios tr { border-bottom: 1px solid #000 !important; }
+            #seccion-pdf-usuarios thead tr { background-color: #f2f2f2 !important; }
+        }
+    </style>
+</div>
+        
+<style>
+    .user-row.selected-row {
+        background-color: #4a3b32 !important; /* Color café seleccionado */
+        color: #f5ebe6 !important;
+    }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const filas = document.querySelectorAll(".user-row");
+    const btnActualizar = document.getElementById("btn-actualizar-modal");
+    const modal = document.getElementById("modal-editar-usuario");
+    
+    // Inputs del Modal
+    const editId = document.getElementById("edit-id");
+    const editNombre = document.getElementById("edit-nombre");
+    const editUsername = document.getElementById("edit-username");
+    const editRol = document.getElementById("edit-rol");
+    const editTurno = document.getElementById("edit-turno");
+    const editActivo = document.getElementById("edit-activo");
+
+    // LÓGICA DE SELECCIÓN DE FILA
+    filas.forEach(fila => {
+        fila.addEventListener("click", () => {
+            filas.forEach(f => f.classList.remove("selected-row"));
+            fila.classList.add("selected-row");
+        });
+    });
+
+    // LÓGICA APERTURA MODAL
+    if (btnActualizar) {
+        btnActualizar.addEventListener("click", () => {
+            const filaSeleccionada = document.querySelector(".user-row.selected-row");
+
+            if (!filaSeleccionada) {
+                alert("Por favor, seleccione un empleado de la tabla primero.");
+                return;
+            }
+
+            // Transferir datos desde data-* hacia el formulario
+            editId.value = filaSeleccionada.getAttribute("data-id");
+            editNombre.value = filaSeleccionada.getAttribute("data-nombre");
+            editUsername.value = filaSeleccionada.getAttribute("data-username");
+            editRol.value = filaSeleccionada.getAttribute("data-rol");
+            editTurno.value = filaSeleccionada.getAttribute("data-turno");
+            editActivo.value = filaSeleccionada.getAttribute("data-activo");
+
+            modal.style.display = "block";
+        });
+    }
+
+    // LÓGICA DE CIERRE
+    document.getElementById("close-modal-editar").addEventListener("click", () => modal.style.display = "none");
+    document.getElementById("btn-cancelar-editar").addEventListener("click", () => modal.style.display = "none");
+    // ========================================================
+    // LÓGICA DE ELIMINACIÓN DE EMPLEADOS
+    // ========================================================
+    const btnEliminarUsuario = document.getElementById("btn-eliminar-usuario");
+    const formEliminarUsuario = document.getElementById("form-eliminar-usuario");
+    const deleteUserIdInput = document.getElementById("delete-user-id");
+
+    if (btnEliminarUsuario) {
+        btnEliminarUsuario.addEventListener("click", () => {
+            // Buscamos la fila que tenga la clase 'selected-row'
+            const filaSeleccionada = document.querySelector(".user-row.selected-row");
+
+            if (!filaSeleccionada) {
+                alert("Por favor, seleccione un empleado de la tabla antes de presionar eliminar.");
+                return;
+            }
+
+            // Recuperamos el ID y el nombre guardados en los atributos data-* de la fila
+            const id = filaSeleccionada.getAttribute("data-id");
+            const nombre = filaSeleccionada.getAttribute("data-nombre");
+
+            // Cuadro de confirmación nativo
+            const confirmar = confirm(`¿Está seguro DESHABILITAR al usuario "${nombre}"?\nEsta acción quitará sus accesos al sistema.`);
+            
+            if (confirmar) {
+                // Seteamos el ID en el formulario oculto y lo enviamos
+                deleteUserIdInput.value = id;
+                formEliminarUsuario.submit();
+            }
+        });
+    }
+            
+    // ========================================================
+    // LÓGICA DE EXPORTACIÓN DE USUARIOS A PDF
+    // ========================================================
+    const btnExportarUsuarios = document.getElementById("btn-exportar-usuarios");
+    const seccionPdf = document.getElementById("seccion-pdf-usuarios");
+    const pdfTablaCuerpo = document.getElementById("pdf-tabla-cuerpo");
+    const pdfFecha = document.getElementById("pdf-fecha");
+
+    // Diccionario para mapear los IDs de Rol a nombres legibles
+    const rolesMapeo = {
+        1: "Admin",
+        2: "Cajero",
+        3: "Mesero",
+        4: "Repartidor",
+        5: "Almacenero",
+        6: "Supervisor"
+    };
+
+    if (btnExportarUsuarios) {
+        btnExportarUsuarios.addEventListener("click", () => {
+            // Establecemos la fecha actual en la cabecera
+            const ahora = new Date();
+            pdfFecha.textContent = ahora.toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
+
+            pdfTablaCuerpo.innerHTML = "";
+
+            // Consumimos el API REST de Spring Boot para traer a todos los empleados
+            fetch('/usuarios/api/lista')
+                .then(response => response.json())
+                .then(listaEmpleados => {
+                    if (listaEmpleados.length === 0) {
+                        alert("No hay usuarios registrados para exportar.");
+                        return;
+                    }
+
+                    // Renderizamos cada fila en la vista previa del PDF
+                    listaEmpleados.forEach(u => {
+                        const fila = document.createElement("tr");
+                        fila.style.borderBottom = "1px solid #4a3b32";
+                        
+                        const rolNombre = rolesMapeo[u.idRol] || "Sin Rol";
+                        const estadoTexto = u.activo ? "Activo" : "Inactivo";
+                        const estadoColor = u.activo ? "#72ef9d" : "#ff6b6b";
+
+                        fila.innerHTML = `
+                            <td style="padding: 12px; font-weight: bold; color: #ddb892;">U000${u.idUsuario}</td>
+                            <td style="padding: 12px; font-weight: 500;">${u.nombreCompleto}</td>
+                            <td style="padding: 12px; color: #b79477;">${u.username}</td>
+                            <td style="padding: 12px;">${rolNombre}</td>
+                            <td style="padding: 12px;">${u.turno}</td>
+                            <td style="padding: 12px; text-align: center; color: ${estadoColor}; font-weight: bold;">${estadoTexto}</td>
+                        `;
+                        pdfTablaCuerpo.appendChild(fila);
+                    });
+
+                    // Mostramos la interfaz del reporte lista para guardarse
+                    seccionPdf.style.display = "block";
+                })
+                .catch(error => {
+                    console.error("Error al exportar empleados:", error);
+                    alert("Ocurrió un error al obtener la información desde el servidor.");
+                });
+        });
+    }
+                
+});
+</script>
+    <script th:src="script.js"></script>
+</body>
+</html>

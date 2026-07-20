@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Control de Delivery</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/estadoDelivery.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+    <main class="container">
+        
+<section class="panel filters-panel">
+    <h2>Panel de Filtros y Búsqueda de Envíos</h2>
+    <!-- Agregamos ID al formulario para capturarlo en JS -->
+    <form class="filters-grid" id="formFiltros">
+        <div class="filter-group">
+            <input type="text" id="filtroBuscar" placeholder="Buscar por Cliente, Dirección o ID Pedido">
+        </div>
+        <div class="filter-group">
+            <select id="filtroEstado">
+                <option value="">Filtrar por Estado (Todos)</option>
+                <option value="preparacion">En Preparación</option>
+                <option value="camino">En Camino</option>
+                <option value="entregado">Entregado</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <select id="filtroMotorizado">
+                <option value="">Asignar / Filtrar por Motorizado (Todos)</option>
+                <option th:each="rep : ${repartidores}" th:value="${rep.idRepartidor}" th:text="${rep.nombreRepartidor}"></option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <button type="submit" class="btn-primary btn-block">
+                <i class="fa-solid fa-magnifying-glass"></i> ACTUALIZAR MONITOREO
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="panel history-panel">
+    <h2>Pedidos en Ruta y Estados de Entrega</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Pedido ID</th>
+                    <th>Cliente / Teléfono</th>
+                    <th>Dirección de Entrega</th>
+                    <th>Repartidor Asignado</th>
+                    <th>Total a Cobrar</th>
+                    <th>Estado Delivery</th>
+                </tr>
+            </thead>
+            <!-- Le asignamos un ID único al cuerpo de la tabla -->
+            <tbody id="tablaDeliveriesBody">
+                <!-- JS insertará aquí las filas de la base de datos de manera dinámica -->
+            </tbody>
+        </table>
+    </div>
+</section>
+                
+
+        <div class="bottom-grid">
+            
+<section class="panel detail-panel">
+    <h2>Detalle del Envío Seleccionado</h2>
+    <!-- Mensaje inicial cuando no hay selección -->
+    <div id="sinSeleccionMsg" style="color: #888; text-align: center; padding: 40px;">
+        <i class="fa-solid fa-circle-info" style="font-size: 2rem; margin-bottom: 10px;"></i>
+        <p>Selecciona un pedido de la lista superior para ver su desglose completo.</p>
+    </div>
+
+    <!-- Contenido oculto por defecto hasta que se haga clic en una fila -->
+    <div class="detail-content" id="detalleContenido" style="display: none;">
+        
+        <div class="company-info">
+            <h3 id="detPedidoId">Pedido #D0000</h3>
+            <p><strong>Cliente:</strong> <span id="detClienteNombre">...</span></p>
+            <p><strong>Dirección:</strong> <span id="detDireccion">...</span></p>
+            <p><strong>Referencia:</strong> <span id="detReferencia">...</span></p>
+            <p><strong>Teléfono:</strong> <span id="detTelefono">...</span></p>
+        </div>
+
+        <div class="invoice-summary">
+            <h4>Productos a Entregar</h4>
+            <!-- Aquí JS renderizará la lista de productos real -->
+            <p class="items-preview" id="detListaProductos">...</p>
+            
+            <div class="invoice-breakdown">
+                <div class="inv-line"><span>Subtotal Productos:</span> <span id="detSubtotal">S/. 0.00</span></div>
+                <div class="inv-line"><span>Costo Delivery:</span> <span id="detEnvio">S/. 0.00</span></div>
+                <hr class="dashed-hr">
+                <div class="inv-line total"><span>Total a Pagar (<span id="detTipoPago">...</span>):</span> <span id="detTotal">S/. 0.00</span></div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-primary" id="btnCambiarEntregado">CAMBIAR A 'ENTREGADO'</button>
+        </div>
+    </div>
+</section>
+<div class="metrics-sidebar">
+    
+    <!-- 1. Pedidos en Ruta Activa -->
+    <div class="metric-box alert-box">
+        <span>Pedidos en Ruta Activa:</span>
+        <strong th:text="${cantEnCamino} + ' En Camino'">0 En Camino</strong>
+    </div>
+
+    <!-- 2. Resumen del Día -->
+    <div class="panel summary-box">
+        <div class="metric-row">
+            <span>Total Entregas Hoy:</span>
+            <strong th:text="${cantEntregados} + ' Pedidos'">0 Pedidos</strong>
+        </div>
+        <div class="metric-row">
+            <span>Tiempo Promedio:</span>
+            <span th:text="${tiempoPromedio} + ' min'">28 min</span>
+        </div>
+    </div>
+
+    <!-- 3. Estado rápido de la flota y Cocina -->
+    <div class="panel extra-info-box">
+        <p>Estado General de la Flota:</p>
+        <h4 th:text="${resumenFlota}">Motos Libres: 0 | En Ruta: 0</h4>
+        <p class="pending-orders">
+            Pedidos por despachar en cocina: 
+            <strong th:text="${cantEnPreparacion}">0</strong>
+        </p>
+    </div>
+</div>       
+        </div>
+    </main>
+
+    <script>
+let pedidoSeleccionadoId = null;
+document.addEventListener("DOMContentLoaded", () => {
+    const formFiltros = document.getElementById("formFiltros");
+    
+    if (formFiltros) {
+        formFiltros.addEventListener("submit", (e) => {
+            e.preventDefault(); // Detener recarga de página
+            cargarPedidosFiltrados();
+        });
+    }
+// Escuchamos el clic del botón "Cambiar a Entregado"
+    const btnEntregado = document.getElementById("btnCambiarEntregado");
+    if (btnEntregado) {
+        btnEntregado.addEventListener("click", marcarPedidoComoEntregado);
+    }
+    // Cargar los datos iniciales al entrar a la página
+    cargarPedidosFiltrados();
+});
+// NUEVA FUNCIÓN: Envía la orden de finalización al backend de Spring Boot
+function marcarPedidoComoEntregado() {
+    if (!pedidoSeleccionadoId) {
+        alert("⚠️ Por favor, selecciona primero un pedido de la lista.");
+        return;
+    }
+
+    if (!confirm(`¿Estás seguro de cambiar el Pedido #D00${pedidoSeleccionadoId} a estado 'ENTREGADO'?`)) {
+        return; // Cancela si el usuario presiona "No" en la ventana de confirmación
+    }
+
+    const payload = { idDelivery: pedidoSeleccionadoId };
+
+    fetch('/api/deliveries/completar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Error en la respuesta del servidor.");
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert(`🎉 ${data.message}`);
+            
+            // Recargamos la tabla de arriba de inmediato para ver reflejado el cambio de estado
+            cargarPedidosFiltrados(); 
+            
+            // Ocultamos el panel de detalle ya completado
+            document.getElementById("detalleContenido").style.display = "none";
+            document.getElementById("sinSeleccionMsg").style.display = "block";
+            pedidoSeleccionadoId = null; // Reseteamos la variable global
+        } else {
+            alert(`❌ No se pudo completar: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("❌ Error de comunicación con el servidor al intentar cerrar el delivery.");
+    });
+}
+function cargarPedidosFiltrados() {
+    const buscar = document.getElementById("filtroBuscar").value;
+    const estado = document.getElementById("filtroEstado").value;
+
+    // Construimos la URL con los parámetros de consulta dinámicos
+    const url = `/api/deliveries/filtrar?buscar=${encodeURIComponent(buscar)}&estado=${encodeURIComponent(estado)}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error("Error obteniendo el listado filtrado.");
+            return response.json();
+        })
+        .then(pedidos => {
+            renderizarTabla(pedidos);
+        })
+        .catch(error => console.error("Error al filtrar deliveries:", error));
+}
+
+function renderizarTabla(pedidos) {
+    const tbody = document.getElementById("tablaDeliveriesBody");
+    tbody.innerHTML = ""; // Limpiar filas anteriores
+
+    if (pedidos.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888; padding:20px;">No se encontraron pedidos con los filtros aplicados.</td></tr>`;
+        return;
+    }
+
+    pedidos.forEach((p, index) => {
+        const tr = document.createElement("tr");
+        
+        // Definir clases CSS dinámicas para los badges de estado
+        let badgeClass = "status-pending";
+        if (p.estado.includes("Preparación")) badgeClass = "status-prep";
+        if (p.estado.includes("Camino")) badgeClass = "status-road";
+        if (p.estado.includes("Entregado")) badgeClass = "status-done";
+
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>D00${p.idDelivery}</td>
+            <td class="text-highlight">${p.clienteNombre} (${p.clienteTelefono})</td>
+            <td>${p.direccionEnvio}</td>
+            <td>${p.repartidor}</td>
+            <td>S/. ${parseFloat(p.total).toFixed(2)}</td>
+            <td><span class="badge ${badgeClass}">${p.estado}</span></td>
+        `;
+        
+        tr.addEventListener("click", () => {
+            // Resaltar visualmente la fila seleccionada en la tabla[cite: 6]
+            document.querySelectorAll("#tablaDeliveriesBody tr").forEach(row => row.classList.remove("selected-row"));
+            tr.classList.add("selected-row");
+            // Nueva llamada asíncrona pasando el ID real de la base de datos
+            cargarDetalleEspecifico(p.idDelivery);
+        });
+                
+
+        tbody.appendChild(tr);
+    });
+}
+            
+// MODIFICACIÓN EN TU FUNCIÓN EXISTENTE: Actualiza esta línea donde procesas el clic de la fila
+function cargarDetalleEspecifico(idDelivery) {
+    // Recordamos el ID de forma global antes de hacer la petición
+    pedidoSeleccionadoId = idDelivery; 
+
+    fetch(`/api/deliveries/detalle?idDelivery=${idDelivery}`)
+        .then(response => response.json())
+        .then(res => {
+            if (res.success) {
+                mostrarDetalleEnPanel(res);
+            }
+        })
+        .catch(error => console.error("Error al cargar detalle:", error));
+}
+// NUEVA FUNCIÓN: Modifica el DOM pintando los valores reales en caliente
+function mostrarDetalleEnPanel(data) {
+    // 1. Ocultar el mensaje de aviso y mostrar el contenedor de información
+    document.getElementById("sinSeleccionMsg").style.display = "none";
+    document.getElementById("detalleContenido").style.display = "block";
+
+    // 2. Inyectar datos generales de logística del cliente
+    document.getElementById("detPedidoId").innerText = `Pedido #D00${data.idDelivery}`;
+    document.getElementById("detClienteNombre").innerText = data.clienteNombre;
+    document.getElementById("detDireccion").innerText = data.direccionEnvio;
+    document.getElementById("detReferencia").innerText = data.referencia;
+    document.getElementById("detTelefono").innerText = data.clienteTelefono;
+    document.getElementById("detTipoPago").innerText = data.tipoPago;
+
+    // 3. Procesar y renderizar la lista de licores y productos
+    const contenedorProductos = document.getElementById("detListaProductos");
+    contenedorProductos.innerHTML = ""; // Limpiar texto previo[cite: 6]
+
+    if (data.productos && data.productos.length > 0) {
+        data.productos.forEach(prod => {
+            contenedorProductos.innerHTML += `${prod.cantidad}x ${prod.nombre}<br>`;
+        });
+    } else {
+        contenedorProductos.innerHTML = "Sin registros de productos.";
+    }
+
+    // 4. Mostrar desglose financiero preciso
+    document.getElementById("detSubtotal").innerText = `S/. ${parseFloat(data.subtotalProductos).toFixed(2)}`;
+    document.getElementById("detEnvio").innerText = `S/. ${parseFloat(data.costoEnvio).toFixed(2)}`;
+    document.getElementById("detTotal").innerText = `S/. ${parseFloat(data.total).toFixed(2)}`;
+}
+    </script>
+    <script th:src="script.js"></script>
+</body>
+</html>

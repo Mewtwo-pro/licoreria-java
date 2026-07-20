@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licorería & Taberna - Operaciones de Delivery</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/newdelivery.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+
+    <div id="header-container" th:replace="${session.userRol == 'admin'} ? ~{header-admin} : ~{header-user}"></div>
+        
+    <div class="container-grid">
+        
+        <section class="panel">
+            <h2><i class="fa-solid fa-file-invoice-dollar" style="margin-right: 5px;"></i> 1. Registrar Nuevo Pedido de Delivery</h2>
+            <form onsubmit="event.preventDefault();">
+<div class="form-section">
+    <h3>Datos del Cliente</h3>
+    <div class="form-group-row">
+        <!-- Añadidos IDs -->
+        <input type="text" id="txtTelefono" placeholder="Teléfono / Celular (Ej: 987654321)">
+        <input type="text" id="txtNombreCliente" placeholder="Nombre Completo del Cliente">
+    </div>
+    <div class="form-group-row">
+        <input type="text" id="txtDireccion" placeholder="Dirección de Entrega (Calle, Av, Número)">
+        <select id="selectDistrito">
+            <option value="" data-envio="0">Seleccionar Distrito / Zona</option>
+            <option value="1" data-envio="15.00">Miraflores (S/. 15.00)</option>
+            <option value="2" data-envio="12.00">Surco (S/. 12.00)</option>
+            <option value="3" data-envio="15.00">San Isidro (S/. 15.00)</option>
+        </select>
+    </div>
+    <input type="text" id="txtReferencia" placeholder="Referencia de la vivienda (Color de fachada, frente a...)">
+</div>               
+                        
+                <div class="form-section">
+                    <h3>Añadir Productos al Carrito</h3>
+                    <div class="product-selector-grid">
+<select name="idProducto" id="idProducto">
+    <option value="">Seleccionar Producto Disponible</option>
+    <!-- Agregamos th:data-stock -->
+    <option th:each="prod : ${productos}" 
+            th:value="${prod.idProducto}" 
+            th:data-nombre="${prod.nombreProducto}"
+            th:data-precio="${prod.precioVenta}"
+            th:data-stock="${prod.stockActual}"
+            th:text="${prod.nombreProducto + ' (Stock: ' + prod.stockActual + ') - S/. ' + prod.precioVenta}">
+    </option>
+</select>                           
+                        <input type="number" id="cantidadProducto" value="1" min="1" style="text-align: center;">
+                        <button type="button" id="btnAgregarAlCarrito" class="btn-primary"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+
+                    <div class="mini-cart" id="miniCartContainer">
+                        <!-- JS manejará esto de manera dinámica -->
+                    </div>
+                </div>   
+                <div class="form-section">
+                    <div class="payment-totals-grid">
+                        <div>
+                            <h3>Forma de Pago</h3>
+<select id="selectTipoPago" style="margin-bottom: 10px;">
+    <option value="Efectivo">Efectivo</option>
+    <option value="Tarjeta">Tarjeta</option>
+</select>
+                                    
+                        </div>
+                        <!-- En la sección de Totales, añade identificadores únicos (IDs) -->
+                        <div class="totals-display">
+                            <div class="t-row">
+                                <span>Subtotal:</span> 
+                                <span id="txtSubtotal">S/. 0.00</span>
+                            </div>
+                            <div class="t-row">
+                                <span>Envío:</span> 
+                                <!-- Cambiado a un input numérico sutil para que sea modificable manualmente si lo deseas -->
+                                <input type="number" id="inputEnvio" value="0.00" min="0" step="0.50" style="width: 80px; text-align: right; background: transparent; color: #fff; border: 1px solid #444; border-radius: 4px;">
+                            </div>
+                            <hr class="dashed-hr">
+                            <div class="t-row total">
+                                <span>Total:</span> 
+                                <span id="txtTotal">S/. 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<button type="submit" id="btnGuardarPedido" class="btn-primary btn-block btn-large">
+    GUARDAR Y MANDAR A COCINA/ALMACÉN
+</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2><i class="fa-solid fa-motorcycle" style="margin-right: 5px;"></i> 2. Despacho y Repartidores</h2>
+            
+            <div class="dispatch-section">
+                <h3>Pedidos Pendientes de Salida</h3>
+                
+                <!-- Iteramos sobre los pedidos reales que están en preparación -->
+                <div class="pending-card" th:each="delivery : ${deliveriesPendientes}">
+                    <div class="card-header">
+                        <span class="order-id" th:text="'Pedido #' + ${delivery.idDelivery}">Pedido #D0843</span>
+                        <span class="badge" th:text="${delivery.estadoDelivery}">Listo para Salir</span>
+                    </div>
+                    <p style="color: #ccc;">
+                        <strong class="mx-1">Cliente:</strong> <span th:text="${delivery.clienteNombre}">Elena Pezet</span> | 
+                        <strong>Dirección:</strong> <span th:text="${delivery.direccionEnvio}">San Isidro</span>
+                    </p>
+                    
+                    <!-- Formulario manejado por JavaScript pasando el id de este delivery con Thymeleaf -->
+                    <div class="assign-action">
+                        <select th:id="'selectRepartidor-' + ${delivery.idDelivery}" required>
+                            <option value="">-- Seleccionar Repartidor --</option>
+                            <!-- Iteramos sobre los motorizados que están libres enviados desde Java -->
+                            <option th:each="rep : ${repartidoresLibres}" 
+                                    th:value="${rep.idRepartidor}" 
+                                    th:text="${rep.nombreRepartidor + ' (' + rep.vehiculo + ' - Libre)'}">
+                            </option>
+                        </select>
+                        <!-- Al hacer click enviamos el ID del delivery y buscamos su select correspondiente -->
+                        <button class="btn-primary" th:onclick="'prepararAsignacion(' + ${delivery.idDelivery} + ')'">ASIGNAR</button>
+                    </div>
+                </div>
+                
+                <!-- Mensaje alternativo si no hay entregas en mostrador -->
+                <div th:if="${#lists.isEmpty(deliveriesPendientes)}" style="color: #666; text-align: center; padding: 20px;">
+                    No hay pedidos pendientes de despacho por el momento.
+                </div>
+            </div>
+        
+            <hr class="panel-divider">
+
+            <div class="dispatch-section">
+                <h3>Estado de la Flota</h3>
+                <ul class="rider-list">
+                    <!-- Iteramos sobre todos los repartidores guardados en la Base de Datos -->
+                    <li class="rider-item" th:each="rider : ${todosLosRepartidores}">
+                        <div class="rider-info">
+                            <!-- Cambia la clase del punto visual: 'Libre' -> status-free | 'En Ruta' -> status-busy -->
+                            <span class="dot-status" 
+                                  th:classappend="${rider.estado == 'Libre' ? 'status-free' : 'status-busy'}"></span>
+                            
+                            <!-- Nombre y vehículo del motorizado -->
+                            <span th:text="${rider.nombreRepartidor + ' (' + rider.vehiculo + ')'}">Jorge Rivas (Moto 1)</span>
+                        </div>
+                        
+                        <!-- Texto informativo con el color correcto según el estado -->
+                        <span th:text="${rider.estado.toUpperCase()}" 
+                              th:class="${rider.estado == 'Libre' ? 'text-free' : 'text-busy'}">LIBRE</span>
+                    </li>
+                </ul>
+                
+                <!-- Mensaje sutil si por alguna razón no hay repartidores registrados -->
+                <div th:if="${#lists.isEmpty(todosLosRepartidores)}" style="color: #666; text-align: center; font-size: 0.9rem;">
+                    No hay repartidores registrados en el sistema.
+                </div>
+            </div>
+        </section>
+    </div>
+        
+    <script>
+        let carrito = [];
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnAgregar = document.getElementById("btnAgregarAlCarrito");
+            if(btnAgregar) {
+                btnAgregar.addEventListener("click", agregarProducto);
+            }
+
+            // Escuchar cuando cambian de distrito para actualizar el costo de envío automáticamente
+            const selectDistrito = document.getElementById("selectDistrito");
+            if(selectDistrito) {
+                selectDistrito.addEventListener("change", (e) => {
+                    const opcion = e.target.options[e.target.selectedIndex];
+                    const costoEnvio = parseFloat(opcion.getAttribute("data-envio")) || 0;
+                    document.getElementById("inputEnvio").value = costoEnvio.toFixed(2);
+                    calcularTotales();
+                });
+            }
+
+            // Escuchar si modifican el input de envío manualmente con el teclado o flechas
+            const inputEnvio = document.getElementById("inputEnvio");
+            if(inputEnvio) {
+                inputEnvio.addEventListener("input", calcularTotales);
+            }
+            
+            // Inicializar totales en 0
+            calcularTotales();
+                
+            const btnGuardar = document.getElementById("btnGuardarPedido");
+            if (btnGuardar) {
+                btnGuardar.closest("form").addEventListener("submit", enviarPedidoBaseDatos);
+            } 
+        });
+
+        function agregarProducto() {
+            const select = document.getElementById("idProducto");
+            const cantidadInput = document.getElementById("cantidadProducto");
+            
+            const idProducto = select.value;
+            const cantidadPedida = parseInt(cantidadInput.value);
+
+            if (!idProducto) {
+                alert("Por favor, selecciona un producto.");
+                return;
+            }
+
+            if (cantidadPedida <= 0 || isNaN(cantidadPedida)) {
+                alert("Por favor, ingresa una cantidad válida mayor a 0.");
+                return;
+            }
+
+            const opcionSeleccionada = select.options[select.selectedIndex];
+            const nombre = opcionSeleccionada.getAttribute("data-nombre");
+            const precio = parseFloat(opcionSeleccionada.getAttribute("data-precio"));
+            const stockMaximo = parseInt(opcionSeleccionada.getAttribute("data-stock"));
+
+            const itemExistente = carrito.find(item => item.id === idProducto);
+            const cantidadEnCarrito = itemExistente ? itemExistente.cantidad : 0;
+            
+            if (cantidadEnCarrito + cantidadPedida > stockMaximo) {
+                alert(`❌ ¡No hay stock suficiente!\n\nProducto: ${nombre}\nStock disponible en almacén: ${stockMaximo} unidades.\nYa tienes ${cantidadEnCarrito} en el carrito.`);
+                return;
+            }
+
+            if (itemExistente) {
+                itemExistente.cantidad += cantidadPedida;
+            } else {
+                carrito.push({ id: idProducto, nombre, precio, cantidad: cantidadPedida, stockMaximo });
+            }
+
+            cantidadInput.value = 1;
+            select.value = "";
+
+            actualizarInterfazCarrito();
+        }
+
+        function actualizarInterfazCarrito() {
+            const container = document.getElementById("miniCartContainer");
+            container.innerHTML = ""; 
+
+            carrito.forEach((item, index) => {
+                const subtotalItem = (item.precio * item.cantidad).toFixed(2);
+                
+                const cartItemDiv = document.createElement("div");
+                cartItemDiv.className = "cart-item";
+                cartItemDiv.innerHTML = `
+                    <span>${item.cantidad}x ${item.nombre}</span>
+                    <strong>S/. ${subtotalItem} <i class="fa-solid fa-trash remove-icon" onclick="eliminarDelCarrito(${index})"></i></strong>
+                `;
+                container.appendChild(cartItemDiv);
+            });
+            
+            // Cada vez que cambia el carrito, recalculamos los montos globales
+            calcularTotales();
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarInterfazCarrito();
+        }
+
+        // NUEVA FUNCIÓN PARA CALCULAR LOS TOTALES DINÁMICAMENTE
+        function calcularTotales() {
+            // 1. Calcular Subtotal recorriendo el carrito
+            let subtotal = 0;
+            carrito.forEach(item => {
+                subtotal += item.precio * item.cantidad;
+            });
+
+            // 2. Obtener el valor de envío actual (ya sea del combo o modificado a mano)
+            const inputEnvio = document.getElementById("inputEnvio");
+            let envio = parseFloat(inputEnvio.value) || 0;
+            if (envio < 0) envio = 0; // Evitar que coloquen números negativos
+
+            // 3. Calcular Total final
+            let total = subtotal + envio;
+
+            // 4. Pintar los resultados en el HTML
+            document.getElementById("txtSubtotal").innerText = `S/. ${subtotal.toFixed(2)}`;
+            document.getElementById("txtTotal").innerText = `S/. ${total.toFixed(2)}`;
+        }
+        function enviarPedidoBaseDatos(event) {
+            event.preventDefault(); // Detiene la recarga por defecto de la página
+
+            // 1. Validaciones iniciales básicas
+            if (carrito.length === 0) {
+                alert("❌ No puedes registrar un pedido si el carrito está vacío.");
+                return;
+            }
+
+            const telefono = document.getElementById("txtTelefono").value.trim();
+            const nombreCliente = document.getElementById("txtNombreCliente").value.trim();
+            const direccion = document.getElementById("txtDireccion").value.trim();
+            const referencia = document.getElementById("txtReferencia").value.trim();
+            const tipoPago = document.getElementById("selectTipoPago").value;
+            const envio = parseFloat(document.getElementById("inputEnvio").value) || 0;
+
+            if (!telefono || !nombreCliente || !direccion) {
+                alert("⚠️ Por favor rellene los campos obligatorios del cliente (Teléfono, Nombre y Dirección).");
+                return;
+            }
+
+            // 2. Mapear el arreglo interno del carrito al formato compacto del ItemCarrito DTO
+            const itemsDTO = carrito.map(item => ({
+                idProducto: parseInt(item.id),
+                cantidad: item.cantidad
+            }));
+
+            // 3. Crear el payload JSON completo
+            const payload = {
+                telefono,
+                nombreCliente,
+                direccion,
+                referencia,
+                tipoPago,
+                envio,
+                items: itemsDTO
+            };
+
+            // 4. Despachar petición POST asíncrona a Spring Boot
+            fetch('/api/delivery/guardar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Error de comunicación en servidor.");
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(`🎉 ${data.message}`);
+                    // Limpiamos el carrito local y reseteamos el formulario
+                    carrito = [];
+                    actualizarInterfazCarrito();
+                    document.getElementById("txtTelefono").closest("form").reset();
+                    document.getElementById("inputEnvio").value = "0.00";
+                    calcularTotales();
+                    
+                    // Opcional: Recargar la página para ver reflejados los nuevos pedidos pendientes a la derecha
+                    window.location.reload();
+                } else {
+                    alert(`❌ Error al procesar: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("❌ Ocurrió un fallo en la red o el servidor falló inesperadamente.");
+            });
+        }           
+        function asignarRepartidor(idDelivery, idRepartidor) {
+            if (!idRepartidor) {
+                alert("Por favor, selecciona un repartidor válido.");
+                return;
+            }
+
+            // Construimos los parámetros estructurados
+            const data = { idDelivery, idRepartidor };
+
+            fetch('/api/delivery/asignar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.success) {
+                    alert("🚀 Pedido asignado. ¡El repartidor va en camino!");
+                    window.location.reload(); // Recargamos para que se actualicen las listas de la derecha
+                } else {
+                    alert("❌ Error: " + res.message);
+                }
+            })
+            .catch(error => console.error("Error en despacho:", error));
+        }
+            
+function prepararAsignacion(idDelivery) {
+    const select = document.getElementById(`selectRepartidor-${idDelivery}`);
+    const idRepartidor = parseInt(select.value);
+
+    if (!idRepartidor) {
+        alert("⚠️ Por favor, selecciona un repartidor antes de asignar.");
+        return;
+    }
+
+    // Ejecuta la petición asíncrona hacia Spring Boot
+    asignarRepartidor(idDelivery, idRepartidor);
+}
+
+function asignarRepartidor(idDelivery, idRepartidor) {
+    const data = { idDelivery, idRepartidor };
+
+    fetch('/api/delivery/asignar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Error en la red.");
+        return response.json();
+    })
+    .then(res => {
+        if (res.success) {
+            alert(`🚀 ${res.message}`);
+            // Recargamos la pantalla para que Thymeleaf vuelva a pintar las listas actualizadas
+            window.location.reload(); 
+        } else {
+            alert(`❌ No se pudo asignar: ${res.message}`);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("❌ Error de comunicación con el servidor.");
+    });
+}
+    </script>
+    <script th:src="script.js"></script>
+</body>
+</html>
