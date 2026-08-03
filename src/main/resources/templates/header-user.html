@@ -1,0 +1,57 @@
+<header class="header header-user">
+    <div class="logo">
+        <a href="#">
+            <span class="material-symbols-outlined logo-icon">
+                <i class="fa-solid fa-bottle-droplet"></i>
+            </span>Licorería<span>Don Corleone</span>
+        </a>
+    </div>
+    
+    <div class="header-right">
+        
+        <div class="dropdown-container">
+            <button class="menu-trigger-btn user" id="managementBtn" onclick="toggleMenu('managementDropdown')">
+                <span class="material-symbols-outlined">menu</span> Gestión
+                <span class="material-symbols-outlined arrow-icon">keyboard_arrow_down</span>
+            </button>
+            
+            <form class="vertical-menu-dropdown" id="managementDropdown" th:action="@{/header/accion}" method="POST">
+<button class="menu-item-btn" type="submit" name="accion" value="puntoventa"><span class="material-symbols-outlined">point_of_sale</span> Ventas</button>
+<button class="menu-item-btn" type="submit" name="accion" value="inventario"><span class="material-symbols-outlined">liquor</span> Inventario</button>
+<button class="menu-item-btn" type="submit" name="accion" value="proveedor"><span class="material-symbols-outlined">local_shipping</span> Proveedor</button>
+<button class="menu-item-btn" type="submit" name="accion" value="historial"><span class="material-symbols-outlined">history</span> Historial</button>
+<button class="menu-item-btn" type="submit" name="accion" value="delivery"><span class="material-symbols-outlined">moped</span> Delivery</button>
+<button class="menu-item-btn" type="submit" name="accion" value="estadodelivery"><span class="material-symbols-outlined">info</span> Info Delivery</button>
+                    
+            </form>
+        </div>
+
+        <div class="dropdown-container">
+            <button class="user-btn" id="userBtn" onclick="toggleMenu('userDropdown')">
+                <span class="material-symbols-outlined">account_circle</span>
+            </button>
+
+            <div class="user-dropdown" id="userDropdown">
+                <div class="dropdown-avatar">
+                    <span class="material-symbols-outlined large-icon">account_circle</span>
+                </div>
+                
+                <div th:if="${usuarioLogueado != null}">
+                    <h3 th:text="${usuarioLogueado.username}">Nombre de Usuario</h3>
+                    <p class="user-email" th:text="${usuarioLogueado.username}">usuario</p>
+                </div>
+                
+                <span class="user-role" th:text="${#strings.capitalize(session.userRol)}">Empleado</span>
+                
+                <hr class="divider">
+                
+                <form th:action="@{/logout}" method="POST" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <span class="material-symbols-outlined">logout</span> Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div> 
+</header>

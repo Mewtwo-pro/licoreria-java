@@ -1,0 +1,307 @@
+/* --- VARIABLES Y CONFIGURACIÓN BASE --- */
+:root {
+    --bg-main: #1a1a1a;
+    --bg-panel: #262626;
+    --bg-input: #202521;
+    --text-color: #e0e0e0;
+    --text-muted: #8a8a8a;
+    --accent-green: #41964b;
+    --accent-green-hover: #337a3b;
+    --border-color: #333333;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+/* --- REUTILIZABLES --- */
+.panel {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.panel h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #ffffff;
+    text-transform: none;
+}
+
+/* BOTONES */
+.btn-primary {
+    background-color: var(--accent-green);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-green-hover);
+}
+
+.btn-secondary {
+    background-color: #3a3a3a;
+    color: white;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: #4a4a4a;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* INPUTS Y SELECTS */
+input[type="text"], select {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid #3d453f;
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+input::placeholder {
+    color: var(--text-muted);
+}
+
+/* --- HEADER --- */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.logo-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-title h1 {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* --- SECCIÓN FILTROS --- */
+.filters-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.date-range {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-range label {
+    white-space: nowrap;
+    color: var(--text-muted);
+}
+
+.date-range input {
+    text-align: center;
+}
+
+/* --- TABLA (HISTORIAL) --- */
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: #2b2b2b;
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+th i {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: 5px;
+}
+
+tbody tr:hover {
+    background-color: #2e2e2e;
+}
+
+/* Fila seleccionada verde sutil como la imagen */
+.selected-row {
+    background-color: #233326 !important;
+}
+
+/* --- DISEÑO INFERIOR DIVIDIDO --- */
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 15px;
+}
+
+/* DETALLE DE VENTA COLUMNAS INTERNAS */
+.detail-content {
+    display: grid;
+    grid-template-columns: 1.2fr 1.3fr 1fr;
+    gap: 15px;
+}
+
+/* TICKET VIRTUAL */
+.ticket {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 15px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    border-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.ticket-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.ticket-header h3 {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.ticket-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+}
+
+.ticket hr {
+    border: none;
+    border-top: 1px dashed #000;
+    margin: 8px 0;
+}
+
+.ticket-line.total {
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+/* ITEMS CENTRAL */
+.items-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.items-list ol {
+    padding-left: 20px;
+    color: var(--text-color);
+}
+
+.items-list li {
+    margin-bottom: 8px;
+}
+
+.summary-mini p {
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    margin-top: 5px;
+}
+
+/* BOTONES DE ACCIÓN (DERECHA EN EL DETALLE) */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+}
+
+.action-buttons .btn-primary {
+    font-size: 0.8rem;
+    padding: 12px;
+}
+
+/* PANEL RESUMEN METRICAS GLOBAL */
+.summary-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 30px;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.metric-label {
+    color: #ffffff;
+}
+
+.metric-value {
+    font-weight: bold;
+}
+
+.metric-value.highlight {
+    color: #ffffff;
+}
+
+/* --- RESPONSIVIDAD BÁSICA --- */
+@media (max-width: 1024px) {
+    .filters-grid, .detail-content, .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
